@@ -62,12 +62,12 @@
 </nav>
 <header>
   <h1>🌍 Tutoriels QGIS — en français</h1>
-  <p>Le catalogue complet de QGIS Tutorials and Tips, organisé et traduit. QGIS te servira à préparer les données de tes projets WebGIS (modules 4 à 7).</p>
+  <p>Le catalogue complet de QGIS Tutorials and Tips + les formations Spatial Thoughts, organisés et accessibles en français. QGIS te servira à préparer les données de tes projets WebGIS (modules 4 à 7).</p>
 </header>
 
 <div class="credit">
-  📖 Tutoriels créés par <a href="https://www.linkedin.com/in/spatialthoughts/" target="_blank" rel="noopener">Ujaval Gandhi</a> (<a href="https://spatialthoughts.com/" target="_blank" rel="noopener">Spatial Thoughts</a>), publiés sur <a href="https://www.qgistutorials.com/" target="_blank" rel="noopener">qgistutorials.com</a> sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a>.
-  Les tutoriels sont rédigés en anglais : le bouton <b>« 🇫🇷 Lire en français »</b> ouvre le tutoriel complet traduit automatiquement (Google Translate) — captures d'écran et données d'exercice incluses.
+  📖 Tutoriels et formations créés par <a href="https://www.linkedin.com/in/spatialthoughts/" target="_blank" rel="noopener">Ujaval Gandhi</a> (<a href="https://spatialthoughts.com/" target="_blank" rel="noopener">Spatial Thoughts</a>), publiés sur <a href="https://www.qgistutorials.com/" target="_blank" rel="noopener">qgistutorials.com</a> et <a href="https://spatialthoughts.com/courses/" target="_blank" rel="noopener">spatialthoughts.com/courses</a> — supports de cours sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a>.
+  Le contenu est rédigé en anglais : le bouton <b>« 🇫🇷 Lire en français »</b> ouvre la version complète traduite automatiquement (Google Translate) — captures d'écran et données d'exercice incluses. Les formations Spatial Thoughts offrent leurs supports en accès libre ; les sessions encadrées avec certification sont payantes.
 </div>
 
 <div class="progress-wrap">
@@ -169,13 +169,37 @@ const CATS = [
  {t:"Utiliser les plugins",d:"Installer et gérer les extensions QGIS — dont beaucoup utilisées dans les tutoriels ci-dessus.",u:"3/using_plugins.html"},
  {t:"Ressources d'apprentissage QGIS",d:"Livres, documentations et communautés pour aller plus loin.",u:"learning_resources.html"},
  {t:"Crédits des données",d:"Sources des jeux de données utilisés dans les tutoriels.",u:"credits.html"}
+]},
+{ico:"🎓",titre:"Formations complètes QGIS (Spatial Thoughts)",tutos:[
+ {t:"Introduction à QGIS",d:"Formation structurée pour débutants : interface, données vecteur/raster, analyses et cartes. Supports de cours complets et gratuits.",u:"https://spatialthoughts.com/courses/introduction-to-qgis/"},
+ {t:"QGIS avancé",d:"Traitements avancés, automatisation, expressions complexes et flux de travail professionnels.",u:"https://spatialthoughts.com/courses/advanced-qgis/"},
+ {t:"Masterclass PyQGIS — personnaliser QGIS avec Python",d:"La suite logique de la catégorie PyQGIS : scripts, plugins et automatisation poussée de QGIS.",u:"https://spatialthoughts.com/courses/customizing-qgis-with-python/"}
+]},
+{ico:"🐍",titre:"Formations Python géospatial (Spatial Thoughts)",tutos:[
+ {t:"Python Foundation for Spatial Analysis",d:"Les bases de Python appliquées au géospatial : pandas, geopandas, traitement de données SIG par le code.",u:"https://spatialthoughts.com/courses/python-foundation-for-spatial-analysis/"},
+ {t:"Cartographie et visualisation de données avec Python",d:"Produire des cartes et graphiques de qualité publication avec matplotlib, geopandas et folium (le cousin Python de Leaflet !).",u:"https://spatialthoughts.com/courses/python-dataviz/"},
+ {t:"Télédétection cloud-native avec Python",d:"Traiter l'imagerie satellite moderne (COG, STAC, xarray) directement depuis le cloud.",u:"https://spatialthoughts.com/python-remote-sensing/"}
+]},
+{ico:"🧰",titre:"Formations Web / Data Engineering (Spatial Thoughts)",tutos:[
+ {t:"Construire ton portfolio géospatial en ligne",d:"Atelier pour créer et publier ton site portfolio de projets SIG — complément parfait de ton projet final WebGIS.",u:"https://spatialthoughts.com/courses/geospatial-portfolio-workshop/"},
+ {t:"Maîtriser les outils GDAL",d:"La boîte à outils en ligne de commande qui propulse QGIS, PostGIS et GeoServer : conversion, reprojection, traitement en masse.",u:"https://spatialthoughts.com/courses/mastering-gdal-tools/"}
+]},
+{ico:"🛰️",titre:"Formations Google Earth Engine (Spatial Thoughts)",tutos:[
+ {t:"Google Earth Engine de bout en bout",d:"La référence pour apprendre GEE : analyse d'images satellites à l'échelle planétaire en JavaScript.",u:"https://spatialthoughts.com/courses/google-earth-engine/"},
+ {t:"GEE pour la gestion des ressources en eau",d:"Applications hydrologiques concrètes : précipitations, surfaces en eau, sécheresse.",u:"https://spatialthoughts.com/courses/gee-for-water-resources-management/"},
+ {t:"Graphiques de qualité publication avec GEE",d:"Créer des visualisations et graphiques soignés à partir des données Earth Engine.",u:"https://spatialthoughts.com/courses/gee-charts/"},
+ {t:"Du cloud au bureau : données Earth Engine dans QGIS",d:"Atelier pour connecter GEE et QGIS et rapatrier les données cloud dans ton SIG.",u:"https://spatialthoughts.com/courses/qgis-gee-workshop/"}
 ]}
 ];
 
+const TR = "?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr";
+function enUrl(u){ return u.startsWith("http") ? u : B + u; }
 function frUrl(u){
-  return "https://www-qgistutorials-com.translate.goog/en/docs/" + u + "?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr";
+  const full = enUrl(u);
+  const a = new URL(full);
+  const host = a.hostname.replace(/-/g, "--").replace(/\./g, "-") + ".translate.goog";
+  return a.protocol + "//" + host + a.pathname + TR;
 }
-function enUrl(u){ return B + u; }
 
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem('webgis-qgis')||'{}'); } catch(e){ saved = {}; }
