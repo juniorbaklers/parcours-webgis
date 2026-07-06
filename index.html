@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcours Full Stack Web SIG Open Source</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#243449; --text:#e2e8f0; --muted:#94a3b8;
+    --accent:#38bdf8; --green:#4ade80; --amber:#fbbf24; --border:#334155;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:24px}
+  .container{max-width:960px;margin:0 auto}
+  header{text-align:center;margin-bottom:28px}
+  h1{font-size:1.9rem;background:linear-gradient(90deg,#38bdf8,#4ade80);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);margin-top:6px}
+  .progress-wrap{position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0;margin-bottom:20px}
+  .progress-bar{background:var(--card);border-radius:99px;height:26px;overflow:hidden;border:1px solid var(--border)}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#4ade80);transition:width .4s;border-radius:99px}
+  .progress-label{text-align:center;font-size:.85rem;color:var(--muted);margin-top:6px}
+  .stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center}
+  .stat b{display:block;font-size:1.3rem;color:var(--accent)}
+  .stat span{font-size:.75rem;color:var(--muted)}
+  .module{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden}
+  .module-head{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+  .module-head:hover{background:var(--card2)}
+  .badge{min-width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;background:#0c4a6e;color:var(--accent)}
+  .module-title{flex:1}
+  .module-title h2{font-size:1.05rem}
+  .module-title small{color:var(--muted)}
+  .mod-progress{font-size:.8rem;color:var(--muted);white-space:nowrap}
+  .chev{transition:transform .3s;color:var(--muted)}
+  .module.open .chev{transform:rotate(90deg)}
+  .module-body{display:none;padding:0 20px 18px}
+  .module.open .module-body{display:block}
+  .objectifs{background:#0c4a6e33;border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.9rem;margin-bottom:14px;color:#bae6fd}
+  .res{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:var(--card2)}
+  .res:hover{background:#2b3f5c}
+  .res input{margin-top:5px;width:17px;height:17px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+  .res .info{flex:1}
+  .res a{color:var(--accent);text-decoration:none;font-weight:600}
+  .res a:hover{text-decoration:underline}
+  .res p{font-size:.83rem;color:var(--muted)}
+  .tag{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle;font-weight:600}
+  .tag.gratuit{background:#14532d;color:var(--green)}
+  .tag.payant{background:#713f12;color:var(--amber)}
+  .tag.fr{background:#1e3a8a;color:#93c5fd}
+  .tag.en{background:#374151;color:#d1d5db}
+  .tag.video{background:#4c1d95;color:#c4b5fd}
+  .projet{background:#14532d33;border-left:3px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.9rem;margin-top:12px;color:#bbf7d0}
+  .grp{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+  .grp.free{color:var(--green)}
+  .grp.paid{color:var(--amber)}
+  .grp::after{content:"";flex:1;height:1px;background:var(--border)}
+  .res.done .info a, .res.done .info p{opacity:.45;text-decoration:line-through}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:30px}
+  .reset-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:8px;cursor:pointer;margin-top:8px}
+  .reset-btn:hover{color:var(--text);border-color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🗺️ Parcours Full Stack Web SIG Open Source</h1>
+  <p>Leaflet · GeoServer · PostGIS · Node.js — ~16 semaines à raison de 5-8 h/semaine</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-label" id="label">0 % complété</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><b id="stDone">0</b><span>Ressources terminées</span></div>
+  <div class="stat"><b id="stTotal">0</b><span>Ressources au total</span></div>
+  <div class="stat"><b>8</b><span>Modules</span></div>
+  <div class="stat"><b>~16</b><span>Semaines</span></div>
+</div>
+
+<div id="modules"></div>
+
+<footer>
+  Coche chaque ressource terminée — ta progression est sauvegardée dans ce navigateur.<br>
+  <button class="reset-btn" onclick="resetAll()">Réinitialiser la progression</button>
+</footer>
+</div>
+
+<script>
+const DATA = [
+ {num:"0", titre:"Comprendre le WebGIS", duree:"Semaine 1",
+  obj:"Architecture d'une application SIG web, rôle du client/serveur, services cartographiques WMS/WFS, composants d'une page web.",
+  res:[
+   {t:"Web GIS Development Starter Guide (Medium)",u:"https://medium.com/geekculture/web-gis-development-starter-guide-e9ecd32e7fad",d:"Panorama complet de la pile WebGIS open source : quoi apprendre et dans quel ordre.",tags:["gratuit","en"]},
+   {t:"Introduction to Open Source Web GIS with Leaflet (vidéo)",u:"https://www.youtube.com/watch?v=aZGwmWYaOfs",d:"Atelier vidéo d'introduction au WebGIS open source, avec supports sur GitHub.",tags:["gratuit","en","video"]},
+   {t:"WMS et WFS : configuration et exemples (Geomatick)",u:"https://www.geomatick.com/2019/10/14/wms-et-wfs-configuration-et-exemple-de-hacking/",d:"Comprendre la différence entre WMS (images) et WFS (vecteurs), les deux standards OGC clés.",tags:["gratuit","fr"]},
+   {t:"Standards OGC officiels",u:"https://www.ogc.org/standards/",d:"Référence officielle des standards (WMS, WFS, WMTS) — à survoler pour la culture générale.",tags:["gratuit","en"]}
+  ],
+  projet:"Dessine sur papier l'architecture complète : navigateur → Leaflet → Node.js/GeoServer → PostGIS. Tu la rempliras brique par brique au fil du parcours."},
+ {num:"1", titre:"HTML & CSS — révision et mise à niveau", duree:"Semaines 1-2",
+  obj:"Structure HTML, balises, formulaires, sélecteurs CSS, mise en page. Installer et maîtriser VS Code et ses extensions.",
+  res:[
+   {t:"Créez votre site web avec HTML5 et CSS3 (OpenClassrooms)",u:"https://openclassrooms.com/fr/courses/1603881-creez-votre-site-web-avec-html5-et-css3",d:"Cours de référence en français, du HTML de base à la mise en page CSS.",tags:["gratuit","fr"]},
+   {t:"MDN — Apprendre le développement web",u:"https://developer.mozilla.org/fr/docs/Learn_web_development",d:"LA documentation de référence, en français. À garder ouverte en permanence.",tags:["gratuit","fr"]},
+   {t:"freeCodeCamp — Responsive Web Design",u:"https://www.freecodecamp.org/learn/2022/responsive-web-design/",d:"Certification gratuite 100 % pratique : tu codes directement dans le navigateur.",tags:["gratuit","en"]},
+   {t:"Visual Studio Code (éditeur)",u:"https://code.visualstudio.com/",d:"Installe VS Code + extensions Live Server, Prettier et ESLint.",tags:["gratuit","en"]}
+  ],
+  projet:"Crée une page « portfolio SIG » statique avec un en-tête, un formulaire de contact et une zone réservée à ta future carte."},
+ {num:"2", titre:"JavaScript, DOM, GeoJSON & API REST", duree:"Semaines 2-4",
+  obj:"Variables, chaînes, opérateurs, conditions, tableaux, BOM/DOM, format GeoJSON, consommer une API REST avec fetch.",
+  res:[
+   {t:"Apprenez à programmer avec JavaScript (OpenClassrooms)",u:"https://openclassrooms.com/fr/courses/7696886-apprenez-a-programmer-avec-javascript",d:"Bases JS complètes en français : variables, conditions, boucles, DOM.",tags:["gratuit","fr"]},
+   {t:"javascript.info (version française)",u:"https://fr.javascript.info/",d:"Le tutoriel JS moderne le plus complet du web, traduit en français.",tags:["gratuit","fr"]},
+   {t:"MDN — Guide JavaScript",u:"https://developer.mozilla.org/fr/docs/Web/JavaScript",d:"Référence pour le DOM, le BOM, fetch et les objets JS.",tags:["gratuit","fr"]},
+   {t:"geojson.io",u:"https://geojson.io/",d:"Éditeur en ligne pour créer et comprendre le format GeoJSON en dessinant sur une carte.",tags:["gratuit","en"]},
+   {t:"Spécification GeoJSON (RFC 7946)",u:"https://geojson.org/",d:"Le format d'échange de données géo que tu utiliseras partout : points, lignes, polygones.",tags:["gratuit","en"]},
+   {t:"MDN — Utiliser l'API Fetch",u:"https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch",d:"Appeler une API REST depuis le navigateur — compétence centrale du cours.",tags:["gratuit","fr"]}
+  ],
+  projet:"Écris un script qui appelle une API REST publique (ex. api-adresse.data.gouv.fr) et affiche les résultats GeoJSON dans la console puis dans la page."},
+ {num:"3", titre:"Leaflet — cartes web interactives", duree:"Semaines 4-6",
+  obj:"Créer une carte, marqueurs & popups, charger du GeoJSON réel, contrôles de carte, géolocalisation, intégrer une API, publier sur GitHub Pages.",
+  res:[
+   {t:"Leaflet — Quick Start officiel",u:"https://leafletjs.com/examples/quick-start/",d:"Ta première carte en 15 minutes : fond de carte, marqueur, popup, événements.",tags:["gratuit","en"]},
+   {t:"Leaflet — Tutoriels officiels",u:"https://leafletjs.com/examples.html",d:"GeoJSON, couches, mobile, CRS personnalisés… tous les tutoriels officiels.",tags:["gratuit","en"]},
+   {t:"Tutoriel Leaflet en 6 sessions (SIG & Territoires)",u:"https://www.sigterritoires.fr/index.php/tutoriel-leaflet/",d:"Initiation progressive en français à la création de cartes interactives.",tags:["gratuit","fr"]},
+   {t:"Carte interactive avec GeoJSON externe (Impuls'Map)",u:"http://www.impulsmap.fr/creer-carte-web-interactive-leaflet-donnees-geojson-externes/",d:"Charger des jeux de données GeoJSON réels dans Leaflet, en français.",tags:["gratuit","fr"]},
+   {t:"Learn Git Branching",u:"https://learngitbranching.js.org/?locale=fr_FR",d:"Apprendre Git en jouant, interface en français.",tags:["gratuit","fr"]},
+   {t:"GitHub Pages",u:"https://pages.github.com/",d:"Publier gratuitement ta carte Leaflet en ligne, comme dans le cours.",tags:["gratuit","en"]},
+   {t:"Alphorm — Formation Leaflet professionnelle",u:"https://www.alphorm.com/tutoriel/formation-en-ligne-leaflet---creer-des-cartes-interactives-de-qualite-professionnelle-1-3",d:"Formation vidéo en français en 3 parties pour des cartes de qualité professionnelle.",tags:["payant","fr","video"]},
+   {t:"EGD Academia — Cartographie web interactive avec Leaflet",u:"https://www.egdacademia.com/courses/50/cartographie-web-interactive-avec-leaflet-formation-pour-debutants",d:"Formation en français : GeoJSON, fonctionnalités avancées et déploiement web.",tags:["payant","fr","video"]}
+  ],
+  projet:"Application « localisateur » : recherche d'un lieu (API adresse), ajout d'un marqueur avec popup, affichage d'un GeoJSON réel stylisé — publiée sur GitHub Pages."},
+ {num:"4", titre:"PostgreSQL & PostGIS — base de données spatiale", duree:"Semaines 6-9",
+  obj:"Installer PostgreSQL + PostGIS, pgAdmin, requêtes SQL (WHERE, ORDER BY, agrégats, jointures, horodatage), fonctions spatiales.",
+  res:[
+   {t:"Introduction to PostGIS — atelier officiel",u:"https://postgis.net/workshops/postgis-intro/",d:"L'atelier officiel pas-à-pas : installation, chargement de données, requêtes spatiales. La ressource n° 1 de ce module.",tags:["gratuit","en"]},
+   {t:"PostgreSQL — téléchargement + pgAdmin",u:"https://www.postgresql.org/download/",d:"Installe PostgreSQL (PostGIS via Stack Builder sous Windows) et pgAdmin 4.",tags:["gratuit","en"]},
+   {t:"sql.sh — cours SQL en français",u:"https://sql.sh/",d:"Référence SQL en français : SELECT, WHERE, ORDER BY, GROUP BY, jointures.",tags:["gratuit","fr"]},
+   {t:"LearnSQL — cours PostGIS interactif",u:"https://learnsql.com/course/postgis/",d:"148 exercices interactifs de SQL spatial (~12 h), directement dans le navigateur.",tags:["payant","en"]},
+   {t:"Coursera — Query Spatial Data with PostGIS",u:"https://www.coursera.org/learn/query-spatial-with-postgis",d:"Projet guidé : géométries, systèmes de référence, distances, recherches de proximité.",tags:["gratuit","en","video"]},
+   {t:"Formation PostGIS complète (Class Central, comparatif)",u:"https://www.classcentral.com/subject/postgis",d:"Annuaire de 20+ cours PostGIS pour aller plus loin.",tags:["gratuit","en"]}
+  ],
+  projet:"Importe un shapefile (communes, routes…) dans PostGIS, puis écris 10 requêtes : filtres, agrégats, jointure attributaire et requêtes spatiales (ST_Within, ST_Distance, ST_Buffer)."},
+ {num:"5", titre:"Node.js & Express — le backend", duree:"Semaines 9-11",
+  obj:"Fonctionnement de Node.js, modules et exports, npm, créer un serveur, construire une API REST connectée à PostGIS.",
+  res:[
+   {t:"freeCodeCamp — Node.js & Express, cours complet 8 h (vidéo)",u:"https://www.freecodecamp.org/news/free-8-hour-node-express-course/",d:"Des fondamentaux de Node jusqu'à une API REST complète.",tags:["gratuit","en","video"]},
+   {t:"Node.js — guide officiel de démarrage",u:"https://nodejs.org/fr/learn/getting-started/introduction-to-nodejs",d:"Introduction officielle en français : fonctionnement, modules, process, npm.",tags:["gratuit","fr"]},
+   {t:"Express.js — documentation en français",u:"https://expressjs.com/fr/",d:"Le framework serveur du cours : routage, middleware, réponses JSON.",tags:["gratuit","fr"]},
+   {t:"MIT DUSP — Leaflet + Node.js + PostGIS",u:"http://duspviz.mit.edu/web-map-workshop/leaflet_nodejs_postgis/",d:"Atelier qui connecte exactement les trois briques du cours : carte, serveur Node, base PostGIS.",tags:["gratuit","en"]},
+   {t:"node-postgres (pg)",u:"https://node-postgres.com/",d:"La bibliothèque pour interroger PostgreSQL/PostGIS depuis Node.js.",tags:["gratuit","en"]}
+  ],
+  projet:"API REST Express avec une route /api/points qui interroge PostGIS (ST_AsGeoJSON) et renvoie du GeoJSON consommé par ta carte Leaflet."},
+ {num:"6", titre:"GeoServer — publier des services cartographiques", duree:"Semaines 11-13",
+  obj:"Installer GeoServer, espaces de travail et entrepôts, publier des couches PostGIS en WMS/WFS, styles SLD, consommer les flux dans Leaflet.",
+  res:[
+   {t:"Débuter avec GeoServer (SIG & Territoires)",u:"https://www.sigterritoires.fr/index.php/debuter-avec-geoserver/",d:"Quickstart en français : publier un flux WMS/WFS depuis des tables PostGIS.",tags:["gratuit","fr"]},
+   {t:"GeoServer — documentation officielle (user guide)",u:"https://docs.geoserver.org/latest/en/user/",d:"Installation, espaces de travail, entrepôts, couches, styles.",tags:["gratuit","en"]},
+   {t:"Introduction aux données dans GeoServer (Geomatick)",u:"https://www.geomatick.com/2017/01/14/introduction-aux-donnees-dans-geoserver/",d:"Les 3 niveaux : espace de travail → entrepôt → couche, expliqués en français.",tags:["gratuit","fr"]},
+   {t:"Playlist YouTube — GeoServer and Leaflet Web-GIS",u:"https://www.youtube.com/playlist?list=PLyWyQBSWLw1OS7HojnpX6aogfm7LtF39S",d:"Série vidéo du niveau basique au niveau avancé sur GeoServer + Leaflet.",tags:["gratuit","en","video"]},
+   {t:"WebGIS from scratch : Leaflet/OpenLayers + GeoServer (vidéo)",u:"https://www.youtube.com/watch?v=64zKiHrt5PM",d:"Construction complète d'un WebGIS avec requêtes de features.",tags:["gratuit","en","video"]},
+   {t:"Udemy — Web Mapping avec PostGIS, GeoServer, OpenLayers et Leaflet",u:"https://www.udemy.com/course/web-mapping-open-source-postgis-geoserver-et-openlayers/",d:"Cours en français couvrant exactement la pile du parcours (attendre une promo ~15 €).",tags:["payant","fr","video"]}
+  ],
+  projet:"Publie tes couches PostGIS dans GeoServer (WMS + WFS), applique un style SLD, puis affiche le WMS en fond et le WFS en GeoJSON interactif dans Leaflet."},
+ {num:"7", titre:"Projet final full stack & déploiement", duree:"Semaines 13-16",
+  obj:"Assembler frontend + backend + base spatiale + GeoServer en une application complète, versionnée sur GitHub et déployée.",
+  res:[
+   {t:"web-gis-demo (GitHub)",u:"https://github.com/mattmorz/web-gis-demo",d:"Implémentation de référence Leaflet + GeoServer + PostGIS à disséquer.",tags:["gratuit","en"]},
+   {t:"PostGIS, GeoServer and Leaflet (IGISMAP)",u:"https://www.igismap.com/postgis-geoserver-and-leaflet-gis-web-development/",d:"Tutoriel bout-en-bout : shapefile → PostGIS → GeoServer → Leaflet.",tags:["gratuit","en"]},
+   {t:"Full Stack GIS Web Mapping App (vidéo)",u:"https://www.youtube.com/watch?v=Zct1nyaFEfU",d:"Application complète React Leaflet + PostGIS + PostgreSQL en vidéo.",tags:["gratuit","en","video"]},
+   {t:"leaflet-pgrouting-geoserver (GitHub)",u:"https://github.com/thegisdev/leaflet-pgrouting-geoserver",d:"Pour aller plus loin : calcul d'itinéraires avec pgRouting + GeoServer.",tags:["gratuit","en"]},
+   {t:"Udemy — Complete Web GIS Development Course",u:"https://www.udemy.com/course/complete-web-gis-development-course/",d:"Équivalent payant très complet si tu veux un fil conducteur unique (attendre une promo ~15 €).",tags:["payant","en","video"]},
+   {t:"Render / Railway (hébergement gratuit Node + PostgreSQL)",u:"https://render.com/",d:"Déployer gratuitement ton backend Node et ta base PostgreSQL en ligne.",tags:["gratuit","en"]}
+  ],
+  projet:"PROJET FINAL — Tableau de bord cartographique : carte Leaflet + API Node/Express + PostGIS + couches GeoServer, avec recherche, filtres et statistiques. Code sur GitHub, démo en ligne."}
+];
+
+const DONNEES = {num:"+", titre:"Boîte à outils : données géospatiales gratuites", duree:"Tout au long du parcours",
+ obj:"Sources de données réelles pour tous tes exercices et projets.",
+ res:[
+  {t:"data.gouv.fr",u:"https://www.data.gouv.fr/",d:"Données ouvertes françaises (communes, équipements, environnement…).",tags:["gratuit","fr"]},
+  {t:"Géoservices IGN",u:"https://geoservices.ign.fr/",d:"Fonds de carte et données IGN gratuites (BD TOPO, ortho-photos, flux WMS/WMTS).",tags:["gratuit","fr"]},
+  {t:"Geofabrik — extraits OpenStreetMap",u:"https://download.geofabrik.de/",d:"Télécharger les données OSM par pays/région (shapefiles, PBF).",tags:["gratuit","en"]},
+  {t:"Natural Earth",u:"https://www.naturalearthdata.com/",d:"Données mondiales prêtes à l'emploi (pays, villes, fleuves) à toutes les échelles.",tags:["gratuit","en"]},
+  {t:"QGIS",u:"https://qgis.org/",d:"SIG bureautique open source : préparer, convertir et vérifier tes données avant import dans PostGIS.",tags:["gratuit","fr"]}
+ ],
+ projet:null};
+
+const ALL = [...DATA, DONNEES];
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem('webgis-progress')||'{}'); } catch(e){ saved = {}; }
+
+const modulesEl = document.getElementById('modules');
+let total = 0;
+ALL.forEach((m,mi)=>{
+  const div = document.createElement('div');
+  div.className='module'+(mi===0?' open':'');
+  const renderRes = (r,ri)=>{
+    const id = 'r'+mi+'_'+ri; total++;
+    const checked = saved[id]?'checked':'';
+    const tags = r.tags.map(t=>`<span class="tag ${t}">${t==='fr'?'FR':t==='en'?'EN':t==='video'?'Vidéo':t==='gratuit'?'Gratuit':'Payant'}</span>`).join('');
+    return `<div class="res ${checked?'done':''}" id="row_${id}">
+      <input type="checkbox" id="${id}" ${checked} onchange="toggle('${id}')">
+      <div class="info"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a>${tags}<p>${r.d}</p></div>
+    </div>`;
+  };
+  const freeHtml = m.res.map((r,ri)=>r.tags.includes('gratuit')?renderRes(r,ri):'').join('');
+  const paidHtml = m.res.map((r,ri)=>r.tags.includes('payant')?renderRes(r,ri):'').join('');
+  let resHtml = `<div class="grp free">🟢 Open source / gratuit</div>${freeHtml}`;
+  if(paidHtml) resHtml += `<div class="grp paid">🟡 Payant (optionnel)</div>${paidHtml}`;
+  div.innerHTML = `
+    <div class="module-head" onclick="this.parentElement.classList.toggle('open')">
+      <div class="badge">${m.num}</div>
+      <div class="module-title"><h2>${m.titre}</h2><small>${m.duree}</small></div>
+      <div class="mod-progress" id="mp${mi}"></div>
+      <div class="chev">▶</div>
+    </div>
+    <div class="module-body">
+      <div class="objectifs">🎯 ${m.obj}</div>
+      ${resHtml}
+      ${m.projet?`<div class="projet">🛠️ <b>Projet pratique :</b> ${m.projet}</div>`:''}
+    </div>`;
+  modulesEl.appendChild(div);
+});
+document.getElementById('stTotal').textContent = total;
+
+function toggle(id){
+  const cb = document.getElementById(id);
+  saved[id] = cb.checked;
+  if(!cb.checked) delete saved[id];
+  try{ localStorage.setItem('webgis-progress', JSON.stringify(saved)); }catch(e){}
+  document.getElementById('row_'+id).classList.toggle('done', cb.checked);
+  refresh();
+}
+function refresh(){
+  const done = Object.keys(saved).length;
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('fill').style.width = pct+'%';
+  document.getElementById('label').textContent = pct+' % complété — '+(pct===100?'🎉 Parcours terminé, bravo !':(pct>=50?'Plus de la moitié, continue !':'Bonne route !'));
+  document.getElementById('stDone').textContent = done;
+  ALL.forEach((m,mi)=>{
+    const d = m.res.filter((r,ri)=>saved['r'+mi+'_'+ri]).length;
+    document.getElementById('mp'+mi).textContent = d+'/'+m.res.length;
+  });
+}
+function resetAll(){
+  if(confirm('Réinitialiser toute la progression ?')){
+    saved={};
+    try{ localStorage.removeItem('webgis-progress'); }catch(e){}
+    document.querySelectorAll('.res input').forEach(cb=>cb.checked=false);
+    document.querySelectorAll('.res').forEach(r=>r.classList.remove('done'));
+    refresh();
+  }
+}
+refresh();
+</script>
+</body>
+</html>
