@@ -52,6 +52,18 @@
   .tuto.done .t,.tuto.done p{opacity:.45}
   .tuto.done .t{text-decoration:line-through}
   footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:28px}
+  /* lecteur intégré */
+  .tuto .links a.lire,.tuto .links button.lire{background:var(--green);color:#052e16;border:none;cursor:pointer;font-size:.78rem;padding:4px 12px;border-radius:99px;font-weight:700;font-family:inherit}
+  .tuto .links button.lire:hover{filter:brightness(1.1)}
+  #reader{display:none;position:fixed;inset:0;z-index:100;background:rgba(2,6,23,.92);flex-direction:column}
+  #reader.open{display:flex}
+  .reader-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .reader-bar .rtitle{flex:1;font-weight:700;font-size:.92rem;min-width:180px}
+  .reader-bar button,.reader-bar a{font-size:.78rem;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);cursor:pointer;text-decoration:none;font-family:inherit}
+  .reader-bar button.active{background:#0c4a6e;border-color:var(--accent);color:#bae6fd}
+  .reader-bar button.close{background:#7f1d1d;border-color:#b91c1c;color:#fecaca;font-weight:700}
+  #reader iframe{flex:1;border:none;background:#fff;width:100%}
+  .reader-note{font-size:.72rem;color:var(--muted);padding:4px 14px;background:var(--card)}
 </style>
 </head>
 <body>
@@ -68,7 +80,7 @@
 
 <div class="credit">
   📖 Tutoriels et formations créés par <a href="https://www.linkedin.com/in/spatialthoughts/" target="_blank" rel="noopener">Ujaval Gandhi</a> (<a href="https://spatialthoughts.com/" target="_blank" rel="noopener">Spatial Thoughts</a>), publiés sur <a href="https://www.qgistutorials.com/" target="_blank" rel="noopener">qgistutorials.com</a> et <a href="https://spatialthoughts.com/courses/" target="_blank" rel="noopener">spatialthoughts.com/courses</a> — supports de cours sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a>.
-  Le contenu est rédigé en anglais : le bouton <b>« 🇫🇷 Lire en français »</b> ouvre la version complète traduite automatiquement (Google Translate) — captures d'écran et données d'exercice incluses. Les formations Spatial Thoughts offrent leurs supports en accès libre ; les sessions encadrées avec certification sont payantes.
+  Le bouton <b>« 📖 Lire ici »</b> ouvre le tutoriel <b>directement dans cette page</b> — en français quand la traduction communautaire existe. Pour les pages restées en anglais, « 🇫🇷 Traduction auto » ouvre la version intégralement traduite (Google Translate, nouvel onglet). Les formations Spatial Thoughts offrent leurs supports en accès libre ; les sessions encadrées avec certification sont payantes.
 </div>
 
 <div class="progress-wrap">
@@ -84,6 +96,19 @@
   Coche les tutoriels terminés — ta progression est sauvegardée dans ce navigateur.<br>
   Astuce : fais les catégories « Bases » et « Web mapping » en priorité, elles alimentent directement ton parcours WebGIS.
 </footer>
+</div>
+
+<div id="reader">
+  <div class="reader-bar">
+    <span class="rtitle" id="rtitle"></span>
+    <button id="btnFr" onclick="readerSrc('fr')">🇫🇷 Français</button>
+    <button id="btnEn" onclick="readerSrc('en')">🇬🇧 Original</button>
+    <a id="rauto" href="#" target="_blank" rel="noopener">🌐 Traduction auto (onglet)</a>
+    <a id="rext" href="#" target="_blank" rel="noopener">↗ Ouvrir dans un onglet</a>
+    <button class="close" onclick="closeReader()">✕ Fermer</button>
+  </div>
+  <div class="reader-note">📖 Contenu affiché depuis le site original (Ujaval Gandhi — CC BY 4.0). La traduction française communautaire est partielle : certaines pages restent en anglais — utilise alors « Traduction auto ». Échap pour fermer.</div>
+  <iframe id="riframe" src="about:blank"></iframe>
 </div>
 
 <script>
@@ -194,6 +219,7 @@ const CATS = [
 ];
 
 const TR = "?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr";
+const FR_OFF = "https://storage.googleapis.com/qgis-tutorials/fr/docs/"; // traduction FR officielle (communautaire)
 function enUrl(u){ return u.startsWith("http") ? u : B + u; }
 function frUrl(u){
   const full = enUrl(u);
@@ -201,6 +227,35 @@ function frUrl(u){
   const host = a.hostname.replace(/-/g, "--").replace(/\./g, "-") + ".translate.goog";
   return a.protocol + "//" + host + a.pathname + TR;
 }
+function frOffUrl(u){ return u.startsWith("http") ? null : FR_OFF + u; }
+
+/* ---- lecteur intégré ---- */
+let cur = null;
+function openReader(ci, ti){
+  const tu = CATS[ci].tutos[ti];
+  cur = tu;
+  document.getElementById('rtitle').textContent = tu.t;
+  document.getElementById('rauto').href = frUrl(tu.u);
+  document.getElementById('reader').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  readerSrc(frOffUrl(tu.u) ? 'fr' : 'en');
+}
+function readerSrc(mode){
+  if(!cur) return;
+  const src = mode==='fr' && frOffUrl(cur.u) ? frOffUrl(cur.u) : enUrl(cur.u);
+  document.getElementById('riframe').src = src;
+  document.getElementById('rext').href = src;
+  document.getElementById('btnFr').classList.toggle('active', mode==='fr');
+  document.getElementById('btnEn').classList.toggle('active', mode!=='fr');
+  document.getElementById('btnFr').style.display = frOffUrl(cur.u) ? '' : 'none';
+}
+function closeReader(){
+  document.getElementById('reader').classList.remove('open');
+  document.getElementById('riframe').src = 'about:blank';
+  document.body.style.overflow = '';
+  cur = null;
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeReader(); });
 
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem('webgis-qgis')||'{}'); } catch(e){ saved = {}; }
@@ -218,7 +273,8 @@ CATS.forEach((c,ci)=>{
       <input type="checkbox" id="${id}" ${checked} onchange="toggle('${id}')">
       <div class="info"><div class="t">${tu.t}</div><p>${tu.d}</p>
         <div class="links">
-          <a class="fr" href="${frUrl(tu.u)}" target="_blank" rel="noopener">🇫🇷 Lire en français</a>
+          <button class="lire" onclick="openReader(${ci},${ti})">📖 Lire ici</button>
+          <a class="fr" href="${frUrl(tu.u)}" target="_blank" rel="noopener">🇫🇷 Traduction auto</a>
           <a class="en" href="${enUrl(tu.u)}" target="_blank" rel="noopener">🇬🇧 Original</a>
         </div></div></div>`;
   });
