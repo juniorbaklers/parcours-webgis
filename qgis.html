@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoriels QGIS en français — Full Stack Web SIG</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#243449; --text:#e2e8f0; --muted:#94a3b8;
+    --accent:#38bdf8; --green:#4ade80; --amber:#fbbf24; --border:#334155;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:24px}
+  .container{max-width:960px;margin:0 auto}
+  .topnav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  .topnav a{color:var(--accent);text-decoration:none;font-size:.88rem;padding:7px 14px;border:1px solid var(--border);border-radius:9px}
+  .topnav a:hover{background:var(--card)}
+  header{text-align:center;margin-bottom:22px}
+  h1{font-size:1.8rem;background:linear-gradient(90deg,#4ade80,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);margin-top:6px}
+  .credit{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:.85rem;color:var(--muted);margin-bottom:20px}
+  .credit a{color:var(--accent)}
+  .progress-wrap{position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0;margin-bottom:14px}
+  .progress-bar{background:var(--card);border-radius:99px;height:24px;overflow:hidden;border:1px solid var(--border)}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#4ade80,#38bdf8);transition:width .4s;border-radius:99px}
+  .progress-label{text-align:center;font-size:.85rem;color:var(--muted);margin-top:6px}
+  .search{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:11px 16px;font-size:.95rem;margin-bottom:20px;outline:none}
+  .search:focus{border-color:var(--accent)}
+  .cat{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
+  .cat-head{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none}
+  .cat-head:hover{background:var(--card2)}
+  .cat-head .ico{font-size:1.3rem}
+  .cat-head h2{flex:1;font-size:1.02rem}
+  .cat-head .cnt{font-size:.8rem;color:var(--muted);white-space:nowrap}
+  .chev{transition:transform .3s;color:var(--muted)}
+  .cat.open .chev{transform:rotate(90deg)}
+  .cat-body{display:none;padding:0 16px 14px}
+  .cat.open .cat-body{display:block}
+  .tuto{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:var(--card2)}
+  .tuto:hover{background:#2b3f5c}
+  .tuto input{margin-top:5px;width:17px;height:17px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+  .tuto .info{flex:1}
+  .tuto .t{font-weight:600;color:#e2e8f0}
+  .tuto p{font-size:.83rem;color:var(--muted);margin-top:2px}
+  .tuto .links{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+  .tuto .links a{font-size:.78rem;text-decoration:none;padding:4px 12px;border-radius:99px;font-weight:600}
+  .tuto .links a.fr{background:#1e3a8a;color:#bfdbfe}
+  .tuto .links a.fr:hover{background:#1d4ed8}
+  .tuto .links a.en{background:#374151;color:#d1d5db}
+  .tuto .links a.en:hover{background:#4b5563}
+  .tuto.done .t,.tuto.done p{opacity:.45}
+  .tuto.done .t{text-decoration:line-through}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="topnav">
+  <a href="index.html">🗺️ Parcours & ressources</a>
+  <a href="cours.html">📚 Cours interactifs</a>
+  <a href="qgis.html" style="background:var(--card)">🌍 Tutoriels QGIS</a>
+</nav>
+<header>
+  <h1>🌍 Tutoriels QGIS — en français</h1>
+  <p>Le catalogue complet de QGIS Tutorials and Tips, organisé et traduit. QGIS te servira à préparer les données de tes projets WebGIS (modules 4 à 7).</p>
+</header>
+
+<div class="credit">
+  📖 Tutoriels créés par <a href="https://www.linkedin.com/in/spatialthoughts/" target="_blank" rel="noopener">Ujaval Gandhi</a> (<a href="https://spatialthoughts.com/" target="_blank" rel="noopener">Spatial Thoughts</a>), publiés sur <a href="https://www.qgistutorials.com/" target="_blank" rel="noopener">qgistutorials.com</a> sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a>.
+  Les tutoriels sont rédigés en anglais : le bouton <b>« 🇫🇷 Lire en français »</b> ouvre le tutoriel complet traduit automatiquement (Google Translate) — captures d'écran et données d'exercice incluses.
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-label" id="label">0 tutoriel terminé</div>
+</div>
+
+<input class="search" id="search" type="text" placeholder="🔍 Rechercher un tutoriel (ex. raster, jointure, python, carte de chaleur...)">
+
+<div id="cats"></div>
+
+<footer>
+  Coche les tutoriels terminés — ta progression est sauvegardée dans ce navigateur.<br>
+  Astuce : fais les catégories « Bases » et « Web mapping » en priorité, elles alimentent directement ton parcours WebGIS.
+</footer>
+</div>
+
+<script>
+const B = "https://www.qgistutorials.com/en/docs/";
+const CATS = [
+{ico:"🚀",titre:"Démarrer — Vue d'ensemble",tutos:[
+ {t:"Introduction à QGIS",d:"Présentation du projet QGIS, installation et découverte de l'interface du SIG bureautique open source le plus utilisé au monde.",u:"introduction.html"}
+]},
+{ico:"🧱",titre:"Opérations SIG de base",tutos:[
+ {t:"Réaliser une carte",d:"Créer une carte complète prête à imprimer : couches, symbologie, étiquettes et mise en page.",u:"3/making_a_map.html"},
+ {t:"Travailler avec les données attributaires",d:"Explorer la table attributaire, sélectionner et filtrer les entités selon leurs attributs.",u:"3/working_with_attributes.html"},
+ {t:"Importer des feuilles de calcul ou fichiers CSV",d:"Transformer un tableur avec des coordonnées en couche de points géolocalisés.",u:"3/importing_spreadsheets_csv.html"},
+ {t:"Symbologie vectorielle de base",d:"Styliser points, lignes et polygones : couleurs, catégories, symboles gradués.",u:"3/basic_vector_styling.html"},
+ {t:"Calculer des longueurs de lignes et statistiques",d:"Calculer la longueur des entités linéaires et produire des statistiques par attribut.",u:"3/calculating_line_lengths.html"},
+ {t:"Symbologie et analyse raster de base",d:"Styliser des rasters (relief, palettes) et faire ses premières analyses avec la calculatrice raster.",u:"3/raster_styling_and_analysis.html"},
+ {t:"Mosaïquage et découpage de rasters",d:"Fusionner plusieurs dalles raster en une seule image et la découper selon une emprise.",u:"3/raster_mosaicing_and_clipping.html"},
+ {t:"Travailler avec des données de terrain (MNT)",d:"Exploiter un modèle numérique de terrain : ombrage, pentes, courbes de niveau.",u:"3/working_with_terrain.html"},
+ {t:"Travailler avec des données WMS",d:"Charger des fonds de carte distants via le protocole WMS — le même que tu publieras avec GeoServer !",u:"3/working_with_wms.html"},
+ {t:"Travailler avec les projections",d:"Comprendre les systèmes de coordonnées (dont EPSG:4326) et reprojeter des couches.",u:"3/working_with_projections.html"},
+ {t:"Géoréférencer des cartes scannées",d:"Caler une carte topographique scannée sur des coordonnées réelles.",u:"3/georeferencing_basics.html"},
+ {t:"Géoréférencer des images aériennes",d:"Techniques avancées de géoréférencement d'imagerie aérienne avec points de contrôle.",u:"3/advanced_georeferencing.html"},
+ {t:"Numériser des données cartographiques",d:"Dessiner tes propres couches (bâtiments, routes...) par-dessus une image : la création de données SIG.",u:"3/digitizing_basics.html"},
+ {t:"Rechercher et télécharger des données OpenStreetMap",d:"Extraire des données OSM réelles (routes, POI...) directement dans QGIS — parfait pour alimenter ta base PostGIS.",u:"3/downloading_osm_data.html"}
+]},
+{ico:"⚙️",titre:"Opérations SIG intermédiaires",tutos:[
+ {t:"Jointures de tables",d:"Joindre un tableau statistique à une couche géographique par un champ commun — l'équivalent du JOIN SQL du module 4.",u:"3/performing_table_joins.html"},
+ {t:"Jointures spatiales",d:"Transférer des attributs d'une couche à l'autre selon leur position géographique.",u:"3/performing_spatial_joins.html"},
+ {t:"Requêtes spatiales",d:"Sélectionner des entités selon leur relation spatiale (contient, intersecte...) — le ST_Within de PostGIS en version visuelle.",u:"3/performing_spatial_queries.html"},
+ {t:"Analyse du plus proche voisin",d:"Trouver pour chaque point l'entité la plus proche et calculer les distances.",u:"3/nearest_neighbor_analysis.html"},
+ {t:"Échantillonner un raster par points ou polygones",d:"Extraire les valeurs d'un raster (altitude, température...) aux emplacements d'entités vecteur.",u:"3/sampling_raster_data.html"},
+ {t:"Calculer des surfaces raster",d:"Mesurer la superficie couverte par chaque classe d'un raster (ex. types d'occupation du sol).",u:"3/calculating_raster_area.html"},
+ {t:"Créer des cartes de chaleur (heatmaps)",d:"Visualiser la densité de points par une carte de chaleur — très utilisé pour l'analyse urbaine.",u:"3/creating_heatmaps.html"},
+ {t:"Animer des séries temporelles",d:"Créer une animation cartographique à partir de données horodatées.",u:"3/animating_time_series.html"},
+ {t:"Corriger les géométries invalides",d:"Détecter et réparer les erreurs de géométrie — indispensable avant tout import dans PostGIS.",u:"3/handling_invalid_geometries.html"}
+]},
+{ico:"🔬",titre:"Opérations SIG avancées",tutos:[
+ {t:"Analyse raster avancée",d:"Analyses raster multi-étapes : reclassification, algèbre de cartes, zones favorables.",u:"3/advanced_raster_analysis.html"},
+ {t:"Interpoler des données ponctuelles",d:"Générer une surface continue (IDW, TIN) à partir de mesures ponctuelles.",u:"3/interpolating_point_data.html"},
+ {t:"Traitement par lots (Batch Processing)",d:"Appliquer un même traitement à des dizaines de fichiers en une seule opération.",u:"3/batch_processing.html"},
+ {t:"Automatiser des chaînes de traitements (Modeleur)",d:"Construire visuellement un workflow réutilisable qui enchaîne plusieurs algorithmes.",u:"3/processing_graphical_modeler.html"},
+ {t:"Automatiser la création de cartes (Atlas)",d:"Générer automatiquement une série de cartes (une par commune, par région...) avec l'Atlas.",u:"3/automating_map_creation.html"},
+ {t:"Analyse multicritère par superposition",d:"Croiser plusieurs critères (pente, distance aux routes...) pour identifier les meilleures zones.",u:"3/multi_criteria_overlay.html"}
+]},
+{ico:"🧮",titre:"Expressions QGIS",tutos:[
+ {t:"Filtrer et styliser avec des expressions",d:"Le langage d'expressions QGIS pour des filtres et styles dynamiques basés sur les attributs.",u:"3/vector_styling_expressions.html"},
+ {t:"Créer une carte du monde « Block »",d:"Exercice créatif de cartographie stylisée à base d'expressions.",u:"3/block_world_styling.html"},
+ {t:"Styliser un réseau hydrographique avec des expressions",d:"Épaisseurs et couleurs proportionnelles pour un rendu professionnel de rivières.",u:"3/river_styling_expressions.html"},
+ {t:"Styliser des courbes de niveau en 3D",d:"Mettre en scène le relief avec la vue 3D de QGIS.",u:"3/contour_3d_styling.html"},
+ {t:"Créer des bâtiments isométriques",d:"Effet pseudo-3D isométrique sur les emprises de bâtiments.",u:"3/isometric_buildings.html"},
+ {t:"Cartes interactives dans le canevas",d:"Rendre le canevas QGIS interactif avec des actions et des expressions.",u:"3/interactive_canvas_maps.html"},
+ {t:"Cartes interactives à révélation",d:"Effet de « révélation » au survol pour des présentations dynamiques.",u:"3/interactive_reveal_maps.html"},
+ {t:"Créer un cartogramme animé",d:"Déformer les territoires selon une variable et animer le résultat.",u:"3/cartogram_animation.html"}
+]},
+{ico:"🛣️",titre:"Analyse de réseaux",tutos:[
+ {t:"Visualisation de réseau et calcul d'itinéraires",d:"Plus court chemin sur un réseau routier avec les outils réseau intégrés — la base du routing.",u:"3/basic_network_analysis.html"},
+ {t:"Trouver l'équipement le plus proche (matrice origine-destination)",d:"Calculer les distances de chaque point vers l'équipement le plus proche (écoles, hôpitaux...).",u:"3/origin_destination_matrix.html"},
+ {t:"Zones de desserte avec Openrouteservice",d:"Isochrones « à moins de 15 min » autour d'un lieu via l'API Openrouteservice.",u:"3/service_area_analysis.html"},
+ {t:"Analyse de temps de trajet",d:"Exploiter des données de temps de parcours urbains pour l'analyse de mobilité.",u:"3/travel_time_analysis.html"}
+]},
+{ico:"💧",titre:"Hydrologie",tutos:[
+ {t:"Calculer la pluviométrie moyenne par zone",d:"Méthode des polygones de Thiessen pour estimer la pluie moyenne sur un bassin.",u:"3/areal_mean_rainfall.html"},
+ {t:"Carte colorée de bassins versants",d:"Créer une belle carte de bassins hydrographiques avec teintes dégradées.",u:"3/colorized_river_basin_map.html"}
+]},
+{ico:"🏙️",titre:"Urbanisme",tutos:[
+ {t:"Créer une carte d'occupation du sol",d:"Cartographier l'usage des sols d'une ville à partir de données OSM.",u:"3/creating_landuse_map.html"},
+ {t:"Calculer la densité d'intersections de rues",d:"Indicateur de « marchabilité » d'un quartier par la densité du maillage viaire.",u:"3/calculating_intersection_density.html"},
+ {t:"Déterminer des zones tampons d'occupation du sol",d:"Zones tampons réglementaires autour d'usages spécifiques — le ST_Buffer visuel.",u:"3/landuse_buffer.html"},
+ {t:"Cartographier des volumes de déchets",d:"Étude de cas complète de cartographie thématique appliquée à la gestion des déchets.",u:"3/solidwaste_mapping.html"}
+]},
+{ico:"🐍",titre:"Scripts Python (PyQGIS)",tutos:[
+ {t:"Débuter avec la programmation Python",d:"La console Python de QGIS : manipuler couches et entités par le code.",u:"3/getting_started_with_pyqgis.html"},
+ {t:"Lancer des algorithmes de traitement via Python",d:"Appeler n'importe quel outil de la boîte à traitements depuis un script.",u:"3/processing_algorithms_pyqgis.html"},
+ {t:"Fonctions d'expression personnalisées en Python",d:"Étendre le langage d'expressions avec tes propres fonctions Python.",u:"3/custom_python_functions.html"},
+ {t:"Écrire des scripts pour la boîte à traitements",d:"Transformer tes scripts en véritables outils intégrés à l'interface QGIS.",u:"3/processing_python_scripts.html"},
+ {t:"Construire un plugin Python",d:"Créer de A à Z une extension QGIS avec interface graphique.",u:"3/building_a_python_plugin.html"},
+ {t:"Construire un plugin de traitement",d:"Packager tes algorithmes en plugin distribuable.",u:"3/processing_python_plugin.html"},
+ {t:"Exécuter et planifier des traitements QGIS",d:"Lancer des traitements QGIS sans interface, en tâche planifiée — l'automatisation serveur.",u:"running_qgis_jobs.html"}
+]},
+{ico:"🌐",titre:"Web mapping — le pont vers ton parcours !",tutos:[
+ {t:"Web mapping avec QGIS2Web",d:"Exporter ton projet QGIS en carte web Leaflet ou OpenLayers en quelques clics — à comparer avec ton code du module 3 !",u:"3/web_mapping_with_qgis2web.html"},
+ {t:"Créer des fonds de carte avec QTiles",d:"Générer tes propres tuiles de fond de carte, utilisables ensuite dans L.tileLayer.",u:"creating_basemaps_with_qtiles.html"}
+]},
+{ico:"📎",titre:"Annexe",tutos:[
+ {t:"Utiliser les plugins",d:"Installer et gérer les extensions QGIS — dont beaucoup utilisées dans les tutoriels ci-dessus.",u:"3/using_plugins.html"},
+ {t:"Ressources d'apprentissage QGIS",d:"Livres, documentations et communautés pour aller plus loin.",u:"learning_resources.html"},
+ {t:"Crédits des données",d:"Sources des jeux de données utilisés dans les tutoriels.",u:"credits.html"}
+]}
+];
+
+function frUrl(u){
+  return "https://www-qgistutorials-com.translate.goog/en/docs/" + u + "?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr";
+}
+function enUrl(u){ return B + u; }
+
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem('webgis-qgis')||'{}'); } catch(e){ saved = {}; }
+
+const catsEl = document.getElementById('cats');
+let total = 0;
+CATS.forEach((c,ci)=>{
+  const div = document.createElement('div');
+  div.className = 'cat'+(ci<=1?' open':'');
+  let items = '';
+  c.tutos.forEach((tu,ti)=>{
+    const id = 'q'+ci+'_'+ti; total++;
+    const checked = saved[id]?'checked':'';
+    items += `<div class="tuto ${checked?'done':''}" id="row_${id}" data-txt="${(tu.t+' '+tu.d).toLowerCase().replace(/"/g,'')}">
+      <input type="checkbox" id="${id}" ${checked} onchange="toggle('${id}')">
+      <div class="info"><div class="t">${tu.t}</div><p>${tu.d}</p>
+        <div class="links">
+          <a class="fr" href="${frUrl(tu.u)}" target="_blank" rel="noopener">🇫🇷 Lire en français</a>
+          <a class="en" href="${enUrl(tu.u)}" target="_blank" rel="noopener">🇬🇧 Original</a>
+        </div></div></div>`;
+  });
+  div.innerHTML = `
+    <div class="cat-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="ico">${c.ico}</span><h2>${c.titre}</h2>
+      <span class="cnt" id="cnt${ci}"></span><span class="chev">▶</span>
+    </div>
+    <div class="cat-body">${items}</div>`;
+  catsEl.appendChild(div);
+});
+
+function toggle(id){
+  const cb = document.getElementById(id);
+  if(cb.checked) saved[id]=true; else delete saved[id];
+  try{ localStorage.setItem('webgis-qgis', JSON.stringify(saved)); }catch(e){}
+  document.getElementById('row_'+id).classList.toggle('done', cb.checked);
+  refresh();
+}
+function refresh(){
+  const done = Object.keys(saved).length;
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('fill').style.width = pct+'%';
+  document.getElementById('label').textContent = done+'/'+total+' tutoriels terminés — '+pct+' %'+(pct===100?' 🎉':'');
+  CATS.forEach((c,ci)=>{
+    const d = c.tutos.filter((tu,ti)=>saved['q'+ci+'_'+ti]).length;
+    document.getElementById('cnt'+ci).textContent = d+'/'+c.tutos.length;
+  });
+}
+document.getElementById('search').addEventListener('input', function(){
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.tuto').forEach(el=>{
+    el.style.display = !q || el.dataset.txt.includes(q) ? '' : 'none';
+  });
+  if(q) document.querySelectorAll('.cat').forEach(c=>c.classList.add('open'));
+});
+refresh();
+</script>
+</body>
+</html>
