@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours interactifs — Full Stack Web SIG</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#243449; --text:#e2e8f0; --muted:#94a3b8;
+    --accent:#38bdf8; --green:#4ade80; --amber:#fbbf24; --red:#f87171; --border:#334155;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+  a{color:var(--accent)}
+  .topbar{display:flex;align-items:center;gap:16px;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+  .topbar h1{font-size:1.05rem;flex:1}
+  .topbar a{text-decoration:none;font-size:.85rem;padding:6px 12px;border:1px solid var(--border);border-radius:8px}
+  .layout{display:flex;min-height:calc(100vh - 55px)}
+  /* sidebar */
+  .side{width:300px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);padding:14px;overflow-y:auto}
+  .side .mod{margin-bottom:10px}
+  .side .mod-t{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 8px}
+  .side .lec{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.9rem}
+  .side .lec:hover{background:var(--card2)}
+  .side .lec.active{background:#0c4a6e;color:#bae6fd}
+  .side .lec .st{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+  .side .lec.done .st{background:var(--green);border-color:var(--green);color:#052e16}
+  .gbar{background:var(--bg);border:1px solid var(--border);border-radius:99px;height:10px;overflow:hidden;margin:6px 8px 14px}
+  .gfill{height:100%;background:linear-gradient(90deg,#38bdf8,#4ade80);width:0%;transition:width .4s}
+  .glabel{font-size:.75rem;color:var(--muted);padding:0 8px 4px;text-align:center}
+  /* content */
+  .content{flex:1;padding:26px 34px;max-width:900px}
+  .content h2{color:var(--accent);margin-bottom:4px;font-size:1.5rem}
+  .content .crumb{color:var(--muted);font-size:.85rem;margin-bottom:18px}
+  .content h3{color:#7dd3fc;margin:22px 0 8px;font-size:1.12rem}
+  .content p{margin-bottom:10px}
+  .content ul,.content ol{margin:0 0 12px 22px}
+  .content li{margin-bottom:5px}
+  .content code{background:#0b1220;border:1px solid var(--border);padding:1px 6px;border-radius:5px;font-size:.88em;color:#fbbf24}
+  .content pre{background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;margin-bottom:12px;font-size:.85rem;line-height:1.5}
+  .content pre code{background:none;border:none;padding:0;color:#e2e8f0}
+  .note{background:#0c4a6e33;border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:.92rem}
+  .warn{background:#78350f33;border-left:3px solid var(--amber);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:.92rem}
+  /* playground */
+  .pg{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:14px 0}
+  .pg-head{display:flex;align-items:center;gap:10px;background:var(--card2);padding:8px 12px;font-size:.82rem;color:var(--muted)}
+  .pg-head button{margin-left:auto;background:var(--green);color:#052e16;border:none;padding:6px 16px;border-radius:7px;font-weight:700;cursor:pointer;font-size:.85rem}
+  .pg-head button:hover{filter:brightness(1.1)}
+  .pg-head .rst{margin-left:0;background:transparent;color:var(--muted);border:1px solid var(--border)}
+  .pg textarea{width:100%;min-height:200px;background:#0b1220;color:#e2e8f0;border:none;padding:12px;font-family:Consolas,Monaco,monospace;font-size:.85rem;line-height:1.5;resize:vertical;outline:none;tab-size:2}
+  .pg iframe{width:100%;height:300px;border:none;border-top:1px solid var(--border);background:#fff}
+  .pg .out{background:#0b1220;border-top:1px solid var(--border);padding:12px;font-family:Consolas,monospace;font-size:.85rem;min-height:40px;white-space:pre-wrap;color:#a5f3fc}
+  /* quiz */
+  .quiz{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin:14px 0}
+  .quiz h4{color:var(--amber);margin-bottom:12px;font-size:.95rem}
+  .quiz .q{margin-bottom:14px}
+  .quiz .q p{font-weight:600;margin-bottom:6px}
+  .quiz label{display:block;padding:7px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:5px;cursor:pointer;font-size:.9rem}
+  .quiz label:hover{background:var(--card2)}
+  .quiz label.ok{border-color:var(--green);background:#14532d55}
+  .quiz label.ko{border-color:var(--red);background:#7f1d1d44}
+  .quiz button{background:var(--accent);color:#082f49;border:none;padding:8px 20px;border-radius:8px;font-weight:700;cursor:pointer}
+  .quiz .verdict{margin-top:10px;font-weight:700}
+  .quiz .exp{font-size:.83rem;color:var(--muted);margin:4px 0 0 12px;display:none}
+  /* challenge / sql */
+  .tests{margin-top:10px;font-size:.88rem}
+  .tests div{padding:5px 10px;border-radius:6px;margin-bottom:4px}
+  .tests .pass{background:#14532d55;color:#bbf7d0}
+  .tests .fail{background:#7f1d1d44;color:#fecaca}
+  .sqlbox textarea{min-height:80px}
+  .verdict.ok{color:var(--green)} .verdict.ko{color:var(--red)}
+  .hint{font-size:.85rem;color:var(--muted);margin-top:6px}
+  /* tp */
+  .tp{background:#14532d22;border:1px solid #14532d;border-radius:12px;padding:18px;margin:14px 0}
+  .tp h4{color:var(--green);margin-bottom:10px}
+  .tp label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer;font-size:.92rem}
+  .tp input{margin-top:4px;accent-color:var(--green)}
+  /* nav bas de leçon */
+  .lesson-nav{display:flex;gap:12px;margin-top:30px;padding-top:18px;border-top:1px solid var(--border);align-items:center}
+  .btn-done{background:var(--green);color:#052e16;border:none;padding:10px 22px;border-radius:9px;font-weight:700;cursor:pointer;font-size:.95rem}
+  .btn-done.is-done{background:var(--card2);color:var(--green);border:1px solid var(--green)}
+  .btn-next{margin-left:auto;background:var(--accent);color:#082f49;text-decoration:none;padding:10px 22px;border-radius:9px;font-weight:700;cursor:pointer;border:none;font-size:.95rem}
+  @media(max-width:800px){.layout{flex-direction:column}.side{width:100%;max-height:280px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>📚 Cours interactifs — Full Stack Web SIG</h1>
+  <a href="index.html">🗺️ Parcours & ressources</a>
+</div>
+<div class="layout">
+  <nav class="side" id="side"></nav>
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+/* ============================================================
+   MOTEUR DE COURS — les données des leçons sont dans LESSONS
+   Types de sections :
+   html      : contenu de leçon (théorie)
+   code      : playground exécutable (mode: web | leaflet | js)
+   quiz      : QCM auto-corrigé
+   challenge : exercice JS avec tests automatiques
+   sql       : exercice SQL vérifié
+   tp        : travaux pratiques avec checklist
+   ============================================================ */
+const MODULES = [];
+function mod(titre){ const m={titre,lecons:[]}; MODULES.push(m); return m; }
+function lec(m, id, titre, sections){ m.lecons.push({id,titre,sections}); }
+
+/* ---------- MODULE 0 : Comprendre le WebGIS ---------- */
+const M0 = mod("0 · Comprendre le WebGIS");
+lec(M0,"m0l1","Architecture d'une application WebGIS",[
+{t:'html',c:`
+<p>Un <b>WebGIS</b> (SIG Web) est une application cartographique qui fonctionne dans le navigateur. Contrairement à un SIG bureautique comme QGIS, tout passe par le web : les données, les traitements et l'affichage.</p>
+<h3>Les 4 briques d'un WebGIS full stack</h3>
+<ul>
+<li><b>Le frontend (client)</b> — la page web vue par l'utilisateur : HTML pour la structure, CSS pour le style, JavaScript + <b>Leaflet</b> pour la carte interactive.</li>
+<li><b>Le backend (serveur applicatif)</b> — un programme <b>Node.js/Express</b> qui reçoit les requêtes HTTP et renvoie des données (souvent du GeoJSON).</li>
+<li><b>La base de données spatiale</b> — <b>PostgreSQL + PostGIS</b> stocke les géométries (points, lignes, polygones) et permet des requêtes spatiales (distance, intersection…).</li>
+<li><b>Le serveur cartographique</b> — <b>GeoServer</b> publie les couches de la base sous forme de services standards <b>WMS</b> et <b>WFS</b>.</li>
+</ul>
+<div class="note">💡 Le trajet d'une donnée : PostGIS → (GeoServer ou API Node) → réseau (HTTP) → Leaflet qui l'affiche sur la carte.</div>
+<h3>WMS vs WFS : la différence clé</h3>
+<p><b>WMS</b> (Web Map Service) renvoie des <b>images</b> de carte déjà dessinées par le serveur. Léger pour le navigateur, mais non interactif à l'échelle de l'objet.</p>
+<p><b>WFS</b> (Web Feature Service) renvoie les <b>objets vecteurs</b> eux-mêmes (souvent en GeoJSON) avec leurs attributs. Le navigateur peut alors les styliser, les filtrer, réagir au clic sur chaque objet.</p>
+<pre><code>Analogie : WMS = une photo du plat  |  WFS = la recette + les ingrédients</code></pre>
+<p>Ces deux protocoles sont des standards de l'<b>OGC</b> (Open Geospatial Consortium) : n'importe quel client peut consommer les services de n'importe quel serveur qui les respecte.</p>
+`},
+{t:'quiz',qs:[
+{q:"Quel composant stocke les géométries et permet les requêtes spatiales ?",opts:["Leaflet","GeoServer","PostgreSQL + PostGIS","Express"],a:2,exp:"PostGIS est l'extension spatiale de PostgreSQL : c'est la base de données spatiale."},
+{q:"Un service WMS renvoie…",opts:["des objets vecteurs avec attributs","des images de carte dessinées par le serveur","du code JavaScript","des fichiers shapefile"],a:1,exp:"WMS = images (raster). WFS = vecteurs + attributs."},
+{q:"Quel outil publie des couches PostGIS en WMS/WFS ?",opts:["Node.js","GeoServer","VS Code","npm"],a:1,exp:"GeoServer est le serveur cartographique open source de la pile."},
+{q:"Dans la pile du cours, le backend est écrit avec…",opts:["PHP","Python/Django","Node.js + Express","Java"],a:2,exp:"Node.js permet d'écrire le serveur en JavaScript, avec le framework Express."}
+]}
+]);
+
+/* ---------- MODULE 1 : HTML & CSS ---------- */
+const M1 = mod("1 · HTML & CSS");
+lec(M1,"m1l1","Structure d'une page et sélecteurs CSS",[
+{t:'html',c:`
+<p>Une page web est un document <b>HTML</b> : des balises qui décrivent la structure. Le <b>CSS</b> décrit l'apparence. Ta future application cartographique n'est rien d'autre qu'une page HTML avec une grande <code>&lt;div&gt;</code> pour la carte.</p>
+<h3>Le squelette minimal</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Ma page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Titre&lt;/h1&gt;
+  &lt;p&gt;Un paragraphe.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>Les balises indispensables au WebGIS</h3>
+<ul>
+<li><code>&lt;div id="map"&gt;</code> — le conteneur de ta carte Leaflet.</li>
+<li><code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;button&gt;</code> — formulaires de recherche et filtres.</li>
+<li><code>&lt;script src="..."&gt;</code> et <code>&lt;link rel="stylesheet"&gt;</code> — charger Leaflet (JS + CSS).</li>
+</ul>
+<h3>Sélecteurs CSS essentiels</h3>
+<pre><code>p        { color: blue; }      /* toutes les balises p */
+.classe  { font-weight: bold; } /* class="classe" */
+#map     { height: 400px; }    /* id="map" — LA règle vitale : sans hauteur, pas de carte ! */</code></pre>
+<div class="warn">⚠️ Erreur n°1 des débutants Leaflet : oublier de donner une <b>hauteur</b> à <code>#map</code>. La carte existe mais mesure 0 pixel.</div>
+<h3>À toi de jouer</h3>
+<p>Modifie le code ci-dessous puis clique <b>Exécuter</b> : change le titre, la couleur, ajoute un paragraphe. C'est en cassant qu'on apprend.</p>
+`},
+{t:'code',mode:'web',starter:`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: sans-serif; margin: 20px; }
+  h1 { color: #0369a1; }
+  .encadre { border: 2px solid #0369a1; padding: 10px; border-radius: 8px; }
+  #special { background: #fef9c3; }
+</style>
+</head>
+<body>
+  <h1>Mon premier WebGIS (bientôt)</h1>
+  <p class="encadre">Je suis un paragraphe avec la classe "encadre".</p>
+  <p id="special">Je suis le paragraphe #special.</p>
+  <button>Un bouton qui ne fait rien... pour l'instant</button>
+</body>
+</html>`},
+{t:'quiz',qs:[
+{q:"Quel sélecteur CSS cible l'élément avec id=«map» ?",opts:["map",".map","#map","*map"],a:2,exp:"# pour un id, . pour une classe."},
+{q:"Pourquoi #map doit-il avoir une hauteur CSS ?",opts:["Pour le SEO","Sans hauteur la carte Leaflet ne s'affiche pas","C'est obligatoire en HTML5","Pour charger plus vite"],a:1,exp:"Une div vide a une hauteur de 0 px : la carte serait invisible."},
+{q:"Quelle balise charge une bibliothèque JavaScript externe ?",opts:["<link>","<import>","<script src=...>","<js>"],a:2,exp:"<script src=...> charge un fichier JS ; <link> sert au CSS."}
+]},
+{t:'tp',titre:"TP 1 — Ta page portfolio SIG",steps:[
+"Dans l'éditeur ci-dessus, crée une page avec un titre <h1> à ton nom",
+"Ajoute une liste <ul> de 3 compétences que tu vas acquérir (Leaflet, PostGIS, Node.js)",
+"Ajoute une div <div id=«carte»> avec en CSS : height:200px et background:#dbeafe (elle accueillera ta carte au module 3)",
+"Style le tout : une police, des couleurs, des marges",
+"Bonus : recrée cette page dans VS Code sur ton ordinateur et ouvre-la avec l'extension Live Server"
+]}
+]);
+
+/* ---------- MODULE 2 : JavaScript & GeoJSON ---------- */
+const M2 = mod("2 · JavaScript & GeoJSON");
+lec(M2,"m2l1","Variables, conditions, tableaux",[
+{t:'html',c:`
+<p>JavaScript est le langage qui rend la page vivante — et c'est aussi le langage de ton futur backend Node.js. Double rentabilité.</p>
+<h3>Variables et types</h3>
+<pre><code>let ville = "Douala";        // chaîne de caractères
+const population = 3800000;  // nombre (const = non réassignable)
+let actif = true;            // booléen
+let coords = [9.70, 4.05];   // tableau [longitude, latitude]
+let commune = { nom: "Douala", pop: 3800000 }; // objet</code></pre>
+<h3>Conditions et boucles</h3>
+<pre><code>if (population > 1000000) {
+  console.log(ville + " est une métropole");
+} else {
+  console.log(ville + " est une ville moyenne");
+}
+
+for (let i = 0; i < coords.length; i++) {
+  console.log(coords[i]);
+}</code></pre>
+<h3>Les méthodes de tableau : tes meilleurs alliés SIG</h3>
+<pre><code>const pops = [3800000, 250000, 90000];
+pops.filter(p => p > 100000)   // garde les valeurs > 100000
+pops.map(p => p / 1000)        // transforme chaque valeur
+pops.length                    // nombre d'éléments</code></pre>
+<p>Filtrer des communes, transformer des coordonnées, compter des objets : 80 % du travail SIG côté client, c'est <code>filter</code> et <code>map</code>.</p>
+<h3>Teste dans la console ci-dessous</h3>
+<p>Le résultat de chaque <code>console.log</code> s'affiche sous l'éditeur.</p>
+`},
+{t:'code',mode:'js',starter:`const villes = [
+  { nom: "Douala",   pop: 3800000 },
+  { nom: "Yaoundé",  pop: 4100000 },
+  { nom: "Kribi",    pop: 90000 },
+  { nom: "Bafoussam", pop: 400000 }
+];
+
+// Les métropoles (> 1 million)
+const metropoles = villes.filter(v => v.pop > 1000000);
+console.log("Métropoles :", metropoles.map(v => v.nom));
+
+// Population totale
+let total = 0;
+for (const v of villes) { total = total + v.pop; }
+console.log("Population totale :", total);`},
+{t:'challenge',desc:"Écris une fonction <code>grandesVilles(liste, seuil)</code> qui reçoit un tableau d'objets {nom, pop} et renvoie <b>le tableau des noms</b> (chaînes) des villes dont la population dépasse le seuil.",
+starter:`function grandesVilles(liste, seuil) {
+  // à toi de jouer : filter puis map
+  return [];
+}`,
+tests:[
+{name:"grandesVilles renvoie les bons noms",code:`JSON.stringify(grandesVilles([{nom:"A",pop:500},{nom:"B",pop:1500},{nom:"C",pop:2000}],1000))===JSON.stringify(["B","C"])`},
+{name:"seuil non atteint → tableau vide",code:`JSON.stringify(grandesVilles([{nom:"A",pop:10}],1000))===JSON.stringify([])`},
+{name:"renvoie des chaînes, pas des objets",code:`typeof grandesVilles([{nom:"X",pop:99999}],1)[0]==="string"`}
+]}
+]);
+lec(M2,"m2l2","GeoJSON et API REST",[
+{t:'html',c:`
+<p><b>GeoJSON</b> est LE format d'échange des données géographiques sur le web. C'est du JSON avec une structure imposée. Tu vas le croiser partout : sorties PostGIS, réponses WFS, couches Leaflet.</p>
+<h3>Anatomie d'un GeoJSON</h3>
+<pre><code>{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [9.70, 4.05] },
+      "properties": { "nom": "Douala", "pop": 3800000 }
+    }
+  ]
+}</code></pre>
+<ul>
+<li><b>geometry</b> — la forme : <code>Point</code>, <code>LineString</code>, <code>Polygon</code>…</li>
+<li><b>properties</b> — les attributs métier (nom, population…).</li>
+<li><b>coordinates</b> — ⚠️ toujours <b>[longitude, latitude]</b> en GeoJSON (Leaflet, lui, utilise [lat, lng] — piège classique !).</li>
+</ul>
+<h3>Consommer une API REST avec fetch</h3>
+<p>Une <b>API REST</b> expose des données via des URLs. On les récupère avec <code>fetch()</code> :</p>
+<pre><code>fetch("https://api-adresse.data.gouv.fr/search/?q=lyon")
+  .then(reponse => reponse.json())
+  .then(donnees => {
+    console.log(donnees.features[0].properties.label);
+  });</code></pre>
+<div class="note">💡 L'API Adresse française renvoie directement du GeoJSON. Essaie ci-dessous avec une vraie requête réseau !</div>
+`},
+{t:'code',mode:'js',starter:`// Vraie requête vers l'API Adresse (data.gouv.fr)
+fetch("https://api-adresse.data.gouv.fr/search/?q=marseille&limit=3")
+  .then(r => r.json())
+  .then(geojson => {
+    console.log("Type :", geojson.type);
+    console.log("Nombre de résultats :", geojson.features.length);
+    for (const f of geojson.features) {
+      console.log(f.properties.label, "->", f.geometry.coordinates);
+    }
+  })
+  .catch(err => console.log("Erreur réseau :", err.message));`},
+{t:'challenge',desc:"Écris une fonction <code>extrairePoints(geojson)</code> qui reçoit une FeatureCollection et renvoie un tableau d'objets <code>{nom, lat, lng}</code> — attention : dans GeoJSON, coordinates = [lng, lat], donc il faut <b>inverser</b> ! (le nom est dans <code>properties.nom</code>)",
+starter:`function extrairePoints(geojson) {
+  return geojson.features.map(f => {
+    // récupère properties.nom et inverse les coordonnées
+    return { nom: "", lat: 0, lng: 0 };
+  });
+}`,
+tests:[
+{name:"extrait le nom depuis properties",code:`extrairePoints({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Point",coordinates:[9.7,4.05]},properties:{nom:"Douala"}}]})[0].nom==="Douala"`},
+{name:"lat = coordinates[1]",code:`extrairePoints({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Point",coordinates:[9.7,4.05]},properties:{nom:"D"}}]})[0].lat===4.05`},
+{name:"lng = coordinates[0]",code:`extrairePoints({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Point",coordinates:[9.7,4.05]},properties:{nom:"D"}}]})[0].lng===9.7`}
+]},
+{t:'tp',titre:"TP 2 — Mini géocodeur console",steps:[
+"Dans le playground fetch ci-dessus, remplace 'marseille' par ta ville",
+"Affiche uniquement le premier résultat : label + coordonnées",
+"Crée une variable meilleurScore qui garde le résultat avec le score le plus élevé (propriété properties.score)",
+"Sur geojson.io, dessine 3 points chez toi, copie le GeoJSON généré et fais-le afficher par ton code"
+]}
+]);
+
+/* ---------- MODULE 3 : Leaflet ---------- */
+const M3 = mod("3 · Leaflet");
+lec(M3,"m3l1","Ta première carte interactive",[
+{t:'html',c:`
+<p><b>Leaflet</b> est une bibliothèque JavaScript open source (~42 Ko) pour créer des cartes interactives. C'est une <i>bibliothèque</i>, pas un <i>framework</i> : tu appelles ses fonctions quand tu veux, elle n'impose pas de structure.</p>
+<h3>Les 3 lignes fondatrices</h3>
+<pre><code>// 1. créer la carte dans la div #map, centrée [lat, lng] au zoom 13
+const map = L.map('map').setView([4.05, 9.70], 13);
+
+// 2. ajouter un fond de carte (les "tuiles" OpenStreetMap)
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+// 3. ajouter un marqueur avec une popup
+L.marker([4.05, 9.70]).addTo(map).bindPopup("Douala !");</code></pre>
+<div class="warn">⚠️ Leaflet utilise <b>[latitude, longitude]</b> — l'inverse de GeoJSON. Retiens : <i>Leaflet = Lat d'abord</i>.</div>
+<h3>Les objets de base</h3>
+<ul>
+<li><code>L.map(id)</code> — la carte ; <code>setView(centre, zoom)</code> la positionne.</li>
+<li><code>L.tileLayer(url)</code> — le fond de carte (OSM, satellite…).</li>
+<li><code>L.marker([lat,lng])</code> — un marqueur ; <code>.bindPopup(html)</code> lui attache une bulle.</li>
+<li><code>L.circle</code>, <code>L.polygon</code>, <code>L.polyline</code> — formes vectorielles.</li>
+<li><code>map.on('click', e => ...)</code> — réagir aux événements (e.latlng = où l'on a cliqué).</li>
+</ul>
+<h3>Une vraie carte, là, maintenant</h3>
+<p>Exécute, déplace la carte, clique dessus, modifie le centre et le zoom :</p>
+`},
+{t:'code',mode:'leaflet',starter:`const map = L.map('map').setView([4.05, 9.70], 12);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+L.marker([4.05, 9.70]).addTo(map)
+  .bindPopup("<b>Douala</b><br>Capitale économique").openPopup();
+
+L.circle([4.061, 9.786], { radius: 1200, color: 'crimson' })
+  .addTo(map).bindPopup("Zone aéroport");
+
+// clic sur la carte -> popup avec les coordonnées
+map.on('click', function(e) {
+  L.popup().setLatLng(e.latlng)
+    .setContent("Lat: " + e.latlng.lat.toFixed(4) + "<br>Lng: " + e.latlng.lng.toFixed(4))
+    .openOn(map);
+});`},
+{t:'quiz',qs:[
+{q:"En Leaflet, un point se donne dans l'ordre…",opts:["[longitude, latitude]","[latitude, longitude]","[x, y] en mètres","peu importe"],a:1,exp:"Leaflet = [lat, lng]. GeoJSON = [lng, lat]. Le piège n°1 du WebGIS."},
+{q:"Que fait L.tileLayer(...) ?",opts:["Ajoute un marqueur","Charge le fond de carte en tuiles","Crée la div #map","Zoome sur la carte"],a:1,exp:"Les tuiles sont les petites images 256px qui composent le fond de carte."},
+{q:"Comment attacher une bulle d'info à un marqueur ?",opts:[".setView()",".bindPopup()",".addTo()",".openOn()"],a:1,exp:"bindPopup attache la popup ; openPopup l'ouvre immédiatement."}
+]}
+]);
+lec(M3,"m3l2","Afficher du GeoJSON et styliser",[
+{t:'html',c:`
+<p>La vraie puissance : afficher des <b>données réelles</b>. Leaflet a un objet dédié : <code>L.geoJSON()</code>.</p>
+<h3>Charger une FeatureCollection</h3>
+<pre><code>L.geoJSON(mesDonnees, {
+  style: { color: "#0369a1", weight: 2 },          // style des lignes/polygones
+  onEachFeature: (feature, layer) => {              // pour chaque objet...
+    layer.bindPopup(feature.properties.nom);        // ...popup avec l'attribut
+  },
+  pointToLayer: (feature, latlng) =>                // points -> cercles stylés
+    L.circleMarker(latlng, { radius: 8, fillColor: "orange", fillOpacity: 0.8 })
+}).addTo(map);</code></pre>
+<ul>
+<li><code>style</code> — apparence des géométries (fonction possible pour un style par attribut = carte choroplèthe).</li>
+<li><code>onEachFeature</code> — exécuté pour chaque objet : popups, événements…</li>
+<li><code>pointToLayer</code> — comment dessiner les points (cercles plutôt que marqueurs).</li>
+</ul>
+<p>Et pour des données distantes : <code>fetch(url).then(r=>r.json()).then(data => L.geoJSON(data).addTo(map))</code> — tu combines les modules 2 et 3 !</p>
+<h3>Démo complète : villes + frontière fictive</h3>
+`},
+{t:'code',mode:'leaflet',starter:`const map = L.map('map').setView([5.5, 11.5], 6);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  { attribution: '&copy; OSM' }).addTo(map);
+
+const villes = {
+  "type": "FeatureCollection",
+  "features": [
+    { "type":"Feature", "geometry":{"type":"Point","coordinates":[9.70,4.05]},
+      "properties":{"nom":"Douala","pop":3800000} },
+    { "type":"Feature", "geometry":{"type":"Point","coordinates":[11.52,3.87]},
+      "properties":{"nom":"Yaoundé","pop":4100000} },
+    { "type":"Feature", "geometry":{"type":"Point","coordinates":[9.91,2.94]},
+      "properties":{"nom":"Kribi","pop":90000} }
+  ]
+};
+
+L.geoJSON(villes, {
+  pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+    radius: Math.sqrt(f.properties.pop) / 300,  // taille selon la population
+    fillColor: f.properties.pop > 1000000 ? "#dc2626" : "#f59e0b",
+    color: "#7f1d1d", weight: 1, fillOpacity: 0.75
+  }),
+  onEachFeature: (f, layer) =>
+    layer.bindPopup("<b>" + f.properties.nom + "</b><br>" +
+                    f.properties.pop.toLocaleString() + " hab.")
+}).addTo(map);`},
+{t:'tp',titre:"TP 3 — Localisateur de lieux (le projet du module)",steps:[
+"Dans le playground, remplace les villes par 4 lieux de TON choix (récupère les coordonnées sur geojson.io — pense à l'ordre [lng, lat] !)",
+"Ajoute un attribut 'type' (école, marché, hôpital...) et colore les cercles selon ce type",
+"Ajoute map.on('click') qui affiche les coordonnées cliquées — ton outil de relevé de terrain",
+"Combine avec fetch : géocode une adresse via api-adresse.data.gouv.fr et place un marqueur sur le 1er résultat",
+"Recrée le tout dans VS Code, pousse sur GitHub et publie via GitHub Pages (Settings → Pages), exactement comme ce site !"
+]},
+{t:'quiz',qs:[
+{q:"Quelle option de L.geoJSON permet d'attacher une popup à chaque objet ?",opts:["style","pointToLayer","onEachFeature","bindAll"],a:2,exp:"onEachFeature(feature, layer) est appelé pour chaque feature."},
+{q:"Pour dessiner les points en cercles proportionnels on utilise…",opts:["style","pointToLayer","setView","tileLayer"],a:1,exp:"pointToLayer décide comment représenter chaque Point (ex. L.circleMarker)."}
+]}
+]);
+
+/* ---------- MODULE 4 : SQL & PostGIS ---------- */
+const M4 = mod("4 · SQL & PostGIS");
+lec(M4,"m4l1","Requêtes SQL de base",[
+{t:'html',c:`
+<p>Tes données vivront dans <b>PostgreSQL</b>. Pour leur parler : le langage <b>SQL</b>. Imaginons une table <code>villes</code> :</p>
+<pre><code> id |   nom     |   pop    | region
+----+-----------+----------+----------
+  1 | Douala    | 3800000  | Littoral
+  2 | Yaoundé   | 4100000  | Centre
+  3 | Kribi     |   90000  | Sud
+  4 | Bafoussam |  400000  | Ouest</code></pre>
+<h3>Les 5 requêtes qui font 90 % du travail</h3>
+<pre><code>SELECT nom, pop FROM villes;                     -- choisir des colonnes
+SELECT * FROM villes WHERE pop > 1000000;        -- filtrer
+SELECT * FROM villes ORDER BY pop DESC;          -- trier
+SELECT COUNT(*) FROM villes;                     -- compter
+SELECT region, SUM(pop) FROM villes GROUP BY region;  -- agréger</code></pre>
+<h3>Jointure : croiser deux tables</h3>
+<pre><code>SELECT v.nom, r.chef_lieu
+FROM villes v
+JOIN regions r ON v.region = r.nom;</code></pre>
+<p>À toi : écris les requêtes demandées ci-dessous. La vérification est automatique (la casse et les espaces ne comptent pas).</p>
+`},
+{t:'sql',q:"Écris la requête qui sélectionne <b>toutes les colonnes</b> de la table <code>villes</code> dont la population dépasse 500000.",
+sols:["^select\\*fromvilleswherepop>500000$"],
+hint:"SELECT * FROM ... WHERE pop > ..."},
+{t:'sql',q:"Écris la requête qui renvoie le <b>nom</b> des villes trié par population <b>décroissante</b>.",
+sols:["^selectnomfromvillesorderbypopdesc$"],
+hint:"SELECT colonne FROM table ORDER BY colonne DESC"},
+{t:'sql',q:"Écris la requête qui compte le nombre de villes <b>par région</b> (colonnes : region et le compte).",
+sols:["^selectregion,count\\(\\*\\)fromvillesgroupbyregion$"],
+hint:"SELECT region, COUNT(*) FROM ... GROUP BY ..."},
+{t:'tp',titre:"TP 4a — Installe ton laboratoire",steps:[
+"Installe PostgreSQL depuis postgresql.org (sous Windows, coche PostGIS dans Stack Builder)",
+"Ouvre pgAdmin 4, crée une base 'webgis' puis exécute : CREATE EXTENSION postgis;",
+"Crée la table villes du cours et insère les 4 lignes (INSERT INTO villes VALUES ...)",
+"Rejoue les 3 requêtes validées ci-dessus dans le Query Tool de pgAdmin"
+]}
+]);
+lec(M4,"m4l2","PostGIS : le SQL devient spatial",[
+{t:'html',c:`
+<p><b>PostGIS</b> ajoute un type de colonne <code>geometry</code> et plus de 500 fonctions spatiales <code>ST_*</code>. Ta table devient une carte interrogeable.</p>
+<h3>Créer et remplir une table spatiale</h3>
+<pre><code>CREATE TABLE lieux (
+  id SERIAL PRIMARY KEY,
+  nom TEXT,
+  geom GEOMETRY(Point, 4326)   -- 4326 = WGS84, le système GPS
+);
+
+INSERT INTO lieux (nom, geom)
+VALUES ('Douala', ST_SetSRID(ST_MakePoint(9.70, 4.05), 4326));</code></pre>
+<h3>Les fonctions ST_* incontournables</h3>
+<ul>
+<li><code>ST_AsGeoJSON(geom)</code> — exporte en GeoJSON ⭐ (le pont vers Leaflet !)</li>
+<li><code>ST_Distance(a, b)</code> — distance entre deux géométries</li>
+<li><code>ST_DWithin(a, b, d)</code> — vrai si a est à moins de d de b (rayon de recherche)</li>
+<li><code>ST_Within(a, b)</code> — vrai si a est contenu dans b (point dans polygone)</li>
+<li><code>ST_Buffer(geom, d)</code> — zone tampon de d autour d'une géométrie</li>
+<li><code>ST_Intersects(a, b)</code> — vrai si a et b se touchent/croisent</li>
+</ul>
+<h3>La requête d'or du WebGIS</h3>
+<pre><code>-- "les écoles à moins de 2 km du point cliqué par l'utilisateur"
+SELECT nom, ST_AsGeoJSON(geom)
+FROM ecoles
+WHERE ST_DWithin(
+  geom::geography,
+  ST_SetSRID(ST_MakePoint(9.70, 4.05), 4326)::geography,
+  2000
+);</code></pre>
+<div class="note">💡 <code>::geography</code> fait calculer les distances en <b>mètres</b> réels plutôt qu'en degrés.</div>
+`},
+{t:'sql',q:"Écris la requête qui sélectionne <code>nom</code> et la géométrie au format GeoJSON (fonction sur la colonne <code>geom</code>) depuis la table <code>lieux</code>.",
+sols:["^selectnom,st_asgeojson\\(geom\\)fromlieux$"],
+hint:"SELECT nom, ST_AsGeoJSON(geom) FROM ..."},
+{t:'quiz',qs:[
+{q:"Quel SRID correspond aux coordonnées GPS (WGS84) ?",opts:["2154","3857","4326","1984"],a:2,exp:"4326 = WGS84. 3857 = Web Mercator (affichage). 2154 = Lambert 93 (France)."},
+{q:"Quelle fonction teste si un point est à moins de 500 m d'un autre ?",opts:["ST_Buffer","ST_DWithin","ST_AsGeoJSON","ST_Length"],a:1,exp:"ST_DWithin(a, b, 500) — plus efficace qu'un buffer + intersects."},
+{q:"Quelle fonction transforme une géométrie en texte lisible par Leaflet ?",opts:["ST_AsGeoJSON","ST_MakePoint","ST_Transform","ST_Union"],a:0,exp:"ST_AsGeoJSON produit le GeoJSON que ton API renverra au frontend."}
+]},
+{t:'tp',titre:"TP 4b — Requêtes spatiales réelles",steps:[
+"Dans pgAdmin, crée la table lieux ci-dessus et insère 5 lieux de ta ville (coordonnées via geojson.io)",
+"Écris une requête ST_DWithin qui trouve les lieux à moins de 3 km d'un point donné",
+"Importe un vrai shapefile (communes sur data.gouv.fr) avec l'outil shp2pgsql ou QGIS (glisser-déposer vers PostGIS)",
+"Requête finale : les 10 communes les plus proches de chez toi, triées par ST_Distance"
+]}
+]);
+
+/* ---------- MODULE 5 : Node.js & Express ---------- */
+const M5 = mod("5 · Node.js & Express");
+lec(M5,"m5l1","Construire une API GeoJSON",[
+{t:'html',c:`
+<p><b>Node.js</b> exécute du JavaScript hors navigateur : parfait pour écrire le serveur. <b>Express</b> est le framework minimaliste qui structure ton API. <b>node-postgres (pg)</b> connecte le tout à PostGIS.</p>
+<h3>Un serveur Express en 8 lignes</h3>
+<pre><code>const express = require('express');
+const app = express();
+
+app.get('/api/bonjour', (req, res) => {
+  res.json({ message: "Bonjour le monde !" });
+});
+
+app.listen(3000, () => console.log("Serveur sur http://localhost:3000"));</code></pre>
+<h3>La route qui sert du GeoJSON depuis PostGIS</h3>
+<pre><code>const { Pool } = require('pg');
+const pool = new Pool({ database: 'webgis', user: 'postgres', password: '...' });
+
+app.get('/api/lieux', async (req, res) => {
+  const sql = \`
+    SELECT json_build_object(
+      'type', 'FeatureCollection',
+      'features', json_agg(json_build_object(
+        'type', 'Feature',
+        'geometry', ST_AsGeoJSON(geom)::json,
+        'properties', json_build_object('nom', nom)
+      ))
+    ) AS geojson
+    FROM lieux\`;
+  const result = await pool.query(sql);
+  res.json(result.rows[0].geojson);
+});</code></pre>
+<p>Côté frontend, il ne reste qu'à faire :</p>
+<pre><code>fetch('/api/lieux').then(r => r.json())
+  .then(data => L.geoJSON(data).addTo(map));</code></pre>
+<div class="note">💡 La boucle est bouclée : <b>PostGIS → Express → fetch → Leaflet</b>. C'est ça, le full stack SIG.</div>
+<h3>Concepts clés d'Express</h3>
+<ul>
+<li><b>Route</b> — <code>app.get('/chemin', handler)</code> : une URL = une fonction.</li>
+<li><b>req</b> — la requête entrante : <code>req.params.id</code>, <code>req.query.rayon</code>.</li>
+<li><b>res</b> — la réponse : <code>res.json(objet)</code> envoie du JSON.</li>
+<li><b>Middleware</b> — fonctions exécutées avant les routes : <code>app.use(express.static('public'))</code> sert tes fichiers HTML/JS.</li>
+</ul>
+`},
+{t:'quiz',qs:[
+{q:"Que fait res.json(data) dans Express ?",opts:["Lit du JSON depuis un fichier","Envoie data au client au format JSON","Valide le JSON","Convertit en GeoJSON"],a:1,exp:"res = la réponse HTTP ; res.json sérialise et envoie l'objet."},
+{q:"Dans /api/lieux?rayon=2000, comment lire 2000 côté Express ?",opts:["req.params.rayon","req.body.rayon","req.query.rayon","req.rayon"],a:2,exp:"Les paramètres après ? sont dans req.query ; ceux du chemin (/lieux/:id) dans req.params."},
+{q:"Quel package connecte Node.js à PostgreSQL ?",opts:["mongoose","pg","mysql2","sequelize-gis"],a:1,exp:"node-postgres, importé sous le nom 'pg', avec son Pool de connexions."},
+{q:"Quelle fonction PostgreSQL assemble les lignes en une seule FeatureCollection ?",opts:["ST_Collect","json_agg","array_to_json","ST_Union"],a:1,exp:"json_agg agrège les features ; json_build_object construit la structure GeoJSON."}
+]},
+{t:'tp',titre:"TP 5 — Ton API cartographique (sur ta machine)",steps:[
+"Installe Node.js (nodejs.org, version LTS) puis vérifie : node -v et npm -v",
+"Crée un dossier api-webgis, puis : npm init -y && npm install express pg",
+"Recopie le serveur 8 lignes, lance node server.js et ouvre http://localhost:3000/api/bonjour",
+"Ajoute la route /api/lieux connectée à ta base du TP 4 — teste-la dans le navigateur",
+"Crée un dossier public/ avec une page Leaflet qui fetch('/api/lieux') et affiche tes lieux",
+"Bonus : ajoute /api/proches?lat=..&lng=..&rayon=.. qui utilise ST_DWithin avec req.query"
+]}
+]);
+
+/* ---------- MODULE 6 : GeoServer ---------- */
+const M6 = mod("6 · GeoServer");
+lec(M6,"m6l1","Publier des services WMS/WFS",[
+{t:'html',c:`
+<p><b>GeoServer</b> évite de réécrire une API pour chaque couche : tu branches ta base PostGIS, il publie automatiquement des services standards <b>WMS</b> et <b>WFS</b> consommables par Leaflet, QGIS, ou n'importe quel client OGC.</p>
+<h3>L'organisation en 3 niveaux</h3>
+<ol>
+<li><b>Espace de travail</b> (workspace) — un espace de noms, ex. <code>monprojet</code>.</li>
+<li><b>Entrepôt</b> (store) — la connexion à une source : ta base PostGIS, un shapefile…</li>
+<li><b>Couche</b> (layer) — une table publiée, avec son style et sa projection.</li>
+</ol>
+<h3>Consommer le WMS dans Leaflet</h3>
+<pre><code>L.tileLayer.wms("http://localhost:8080/geoserver/monprojet/wms", {
+  layers: "monprojet:communes",
+  format: "image/png",
+  transparent: true
+}).addTo(map);</code></pre>
+<h3>Consommer le WFS (GeoJSON) dans Leaflet</h3>
+<pre><code>const url = "http://localhost:8080/geoserver/monprojet/ows" +
+  "?service=WFS&version=2.0.0&request=GetFeature" +
+  "&typeName=monprojet:communes&outputFormat=application/json";
+
+fetch(url).then(r => r.json())
+  .then(data => L.geoJSON(data).addTo(map));</code></pre>
+<h3>Les styles SLD</h3>
+<p>GeoServer dessine les couches WMS selon un style <b>SLD</b> (XML). Tu peux styliser par attribut (choroplèthe serveur), définir des règles par échelle, etc. L'éditeur intégré permet de tester en direct.</p>
+<div class="warn">⚠️ En local, GeoServer tourne sur le port <b>8080</b> et l'interface d'admin est sur <code>http://localhost:8080/geoserver</code> (admin / geoserver par défaut — change ce mot de passe !).</div>
+`},
+{t:'quiz',qs:[
+{q:"Dans GeoServer, la connexion à une base PostGIS est un…",opts:["workspace","store (entrepôt)","layer","style"],a:1,exp:"Workspace → Store (la source) → Layer (la table publiée)."},
+{q:"Pour obtenir du GeoJSON depuis GeoServer, on utilise…",opts:["WMS avec format=json","WFS avec outputFormat=application/json","WMTS","SLD"],a:1,exp:"WFS GetFeature + outputFormat=application/json renvoie les vecteurs en GeoJSON."},
+{q:"Quelle option Leaflet charge un service WMS ?",opts:["L.geoJSON","L.tileLayer.wms","L.wmsLayer","fetch"],a:1,exp:"L.tileLayer.wms gère les paramètres WMS (layers, format, transparent...)."},
+{q:"Un style SLD est appliqué…",opts:["par le navigateur","par le serveur (GeoServer) sur les images WMS","par PostGIS","par Node.js"],a:1,exp:"En WMS c'est le serveur qui dessine — donc le style vit côté serveur, en SLD."}
+]},
+{t:'tp',titre:"TP 6 — Publie ta première couche",steps:[
+"Installe GeoServer (geoserver.org — la version 'Platform Independent Binary' + Java, ou l'installeur Windows)",
+"Connecte-toi à http://localhost:8080/geoserver et change le mot de passe admin",
+"Crée un workspace 'monprojet', puis un store PostGIS vers ta base 'webgis' du TP 4",
+"Publie la table lieux (ou communes) : déclare le SRS 4326 et calcule les emprises",
+"Teste avec Layer Preview (OpenLayers) puis dans une page Leaflet : le WMS en fond, le WFS en GeoJSON cliquable",
+"Crée un style SLD simple (couleur selon un attribut) et associe-le à la couche"
+]}
+]);
+
+/* ---------- MODULE 7 : Projet final ---------- */
+const M7 = mod("7 · Projet final");
+lec(M7,"m7l1","Le tableau de bord cartographique complet",[
+{t:'html',c:`
+<p>Tu as toutes les briques. Le projet final les assemble en une application digne d'un portfolio professionnel.</p>
+<h3>Cahier des charges</h3>
+<p>Construire un <b>tableau de bord cartographique</b> sur un thème de ton choix (équipements publics, commerces, environnement, transport…) avec :</p>
+<ul>
+<li><b>Frontend</b> — carte Leaflet plein écran, panneau latéral avec statistiques (nombre d'objets affichés, liste cliquable), barre de recherche d'adresse (API Adresse).</li>
+<li><b>Backend</b> — API Express avec au minimum : <code>GET /api/objets</code> (tout en GeoJSON), <code>GET /api/objets/:id</code> (détail), <code>GET /api/proches?lat&lng&rayon</code> (recherche spatiale ST_DWithin).</li>
+<li><b>Base</b> — PostGIS avec au moins 2 tables dont 1 spatiale, données réelles importées (data.gouv.fr, OSM/Geofabrik…).</li>
+<li><b>GeoServer</b> — au moins 1 couche de contexte publiée en WMS (ex. limites administratives) affichée sous tes données.</li>
+<li><b>Versionné & déployé</b> — code sur GitHub avec un README (captures d'écran !), frontend sur GitHub Pages ou le tout sur Render.</li>
+</ul>
+<h3>Architecture cible</h3>
+<pre><code>[Navigateur]  Leaflet + fetch
+     │  GET /api/proches?lat=..&lng=..&rayon=2000
+     ▼
+[Node.js/Express]  pool.query(ST_DWithin...)
+     │                                   [GeoServer] ── WMS ──> fond de contexte
+     ▼                                        │
+[PostgreSQL + PostGIS] ◄──────────────────────┘</code></pre>
+<h3>Barème d'auto-évaluation (vise 80 %+)</h3>
+<ul>
+<li>La carte charge et les données s'affichent depuis l'API — 25 %</li>
+<li>La recherche spatiale (rayon autour d'un clic) fonctionne — 25 %</li>
+<li>Une couche GeoServer WMS est intégrée — 15 %</li>
+<li>Le code est propre, commenté, sur GitHub avec README — 20 %</li>
+<li>L'app est en ligne et démontrable — 15 %</li>
+</ul>
+<div class="note">🏆 Termine ce projet et tu auras concrètement les compétences du poste « développeur WebGIS junior » : c'est exactement ce qu'on te demandera en entretien de le démontrer.</div>
+`},
+{t:'tp',titre:"Checklist du projet final",steps:[
+"Choisir le thème et trouver un jeu de données réel (data.gouv.fr, Geofabrik, IGN)",
+"Créer la base PostGIS et importer les données (QGIS ou shp2pgsql)",
+"Développer l'API Express : /api/objets, /api/objets/:id, /api/proches",
+"Développer le frontend Leaflet : affichage, popups, panneau de stats, recherche d'adresse",
+"Publier une couche de contexte dans GeoServer et l'intégrer en WMS",
+"Pousser sur GitHub avec un README illustré",
+"Déployer (GitHub Pages pour le front, Render pour l'API + base)",
+"Faire tester par quelqu'un d'autre et corriger 3 retours"
+]}
+]);
+
+/* ============================================================
+   RENDU & LOGIQUE
+   ============================================================ */
+let S = {};
+try { S = JSON.parse(localStorage.getItem('webgis-cours')||'{}'); } catch(e){ S={}; }
+function save(){ try{ localStorage.setItem('webgis-cours', JSON.stringify(S)); }catch(e){} }
+
+const allLessons = [];
+MODULES.forEach((m,mi)=>m.lecons.forEach(l=>allLessons.push({...l, modTitre:m.titre, mi})));
+
+function renderSide(){
+  const el = document.getElementById('side');
+  const done = allLessons.filter(l=>S['done_'+l.id]).length;
+  const pct = Math.round(done/allLessons.length*100);
+  let h = `<div class="glabel">${done}/${allLessons.length} leçons terminées — ${pct} %</div>
+           <div class="gbar"><div class="gfill" style="width:${pct}%"></div></div>`;
+  MODULES.forEach(m=>{
+    h += `<div class="mod"><div class="mod-t">${m.titre}</div>`;
+    m.lecons.forEach(l=>{
+      const isDone = S['done_'+l.id];
+      const isActive = l.id===current;
+      h += `<div class="lec ${isDone?'done':''} ${isActive?'active':''}" onclick="open_('${l.id}')">
+              <span class="st">${isDone?'✓':''}</span><span>${l.titre}</span></div>`;
+    });
+    h += `</div>`;
+  });
+  el.innerHTML = h;
+}
+
+let current = location.hash ? location.hash.slice(1) : allLessons[0].id;
+if(!allLessons.find(l=>l.id===current)) current = allLessons[0].id;
+
+function open_(id){
+  current = id; location.hash = id;
+  renderSide(); renderLesson();
+  document.querySelector('.content').scrollIntoView({behavior:'smooth'});
+  window.scrollTo({top:0});
+}
+
+let uid = 0;
+function renderLesson(){
+  const l = allLessons.find(x=>x.id===current);
+  const idx = allLessons.indexOf(l);
+  const el = document.getElementById('content');
+  uid = 0;
+  let h = `<div class="crumb">${l.modTitre}</div><h2>${l.titre}</h2>`;
+  l.sections.forEach(sec=>{ h += renderSection(sec, l.id); });
+  const isDone = S['done_'+l.id];
+  h += `<div class="lesson-nav">
+    <button class="btn-done ${isDone?'is-done':''}" onclick="toggleDone('${l.id}')">${isDone?'✓ Leçon terminée':'Marquer comme terminée'}</button>
+    ${idx<allLessons.length-1?`<button class="btn-next" onclick="open_('${allLessons[idx+1].id}')">Leçon suivante →</button>`:''}
+  </div>`;
+  el.innerHTML = h;
+}
+
+function toggleDone(id){
+  if(S['done_'+id]) delete S['done_'+id]; else S['done_'+id]=true;
+  save(); renderSide(); renderLesson();
+}
+
+function esc_(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderSection(sec, lid){
+  uid++;
+  const id = lid+'_s'+uid;
+  if(sec.t==='html') return `<div>${sec.c}</div>`;
+  if(sec.t==='code'){
+    const label = sec.mode==='leaflet'?'Playground Leaflet (carte réelle)':sec.mode==='js'?'Playground JavaScript (console)':'Playground HTML/CSS';
+    return `<div class="pg" id="pg_${id}">
+      <div class="pg-head">🧪 ${label}
+        <button class="rst" onclick="pgReset('${id}')">↺ Réinitialiser</button>
+        <button onclick="pgRun('${id}','${sec.mode}')">▶ Exécuter</button></div>
+      <textarea id="ta_${id}" data-starter="${esc_(sec.starter).replace(/"/g,'&quot;')}">${esc_(sec.starter)}</textarea>
+      ${sec.mode==='js'?`<div class="out" id="out_${id}">— la sortie console apparaîtra ici —</div>`:`<iframe id="if_${id}" sandbox="allow-scripts allow-popups"></iframe>`}
+    </div>`;
+  }
+  if(sec.t==='quiz'){
+    let h = `<div class="quiz" id="qz_${id}"><h4>📝 Quiz — vérifie tes acquis</h4>`;
+    sec.qs.forEach((q,qi)=>{
+      h += `<div class="q"><p>${qi+1}. ${esc_(q.q)}</p>`;
+      q.opts.forEach((o,oi)=>{
+        h += `<label><input type="radio" name="q_${id}_${qi}" value="${oi}"> ${esc_(o)}</label>`;
+      });
+      h += `<div class="exp" id="exp_${id}_${qi}">💡 ${esc_(q.exp)}</div></div>`;
+    });
+    h += `<button onclick='quizCheck("${id}", ${JSON.stringify(sec.qs.map(q=>q.a))})'>Valider mes réponses</button>
+          <div class="verdict" id="v_${id}"></div></div>`;
+    return h;
+  }
+  if(sec.t==='challenge'){
+    return `<div class="quiz"><h4>⚔️ Défi de code — validation automatique</h4>
+      <p>${sec.desc}</p>
+      <div class="pg"><div class="pg-head">💻 Ton code
+        <button onclick='chRun("${id}", ${JSON.stringify(sec.tests)})'>▶ Lancer les tests</button></div>
+      <textarea id="ch_${id}">${esc_(sec.starter)}</textarea></div>
+      <div class="tests" id="t_${id}"></div></div>`;
+  }
+  if(sec.t==='sql'){
+    return `<div class="quiz sqlbox"><h4>🗄️ Exercice SQL</h4><p>${sec.q}</p>
+      <div class="pg"><div class="pg-head">SQL
+        <button onclick='sqlCheck("${id}", ${JSON.stringify(sec.sols)})'>✔ Vérifier</button></div>
+      <textarea id="sq_${id}" style="min-height:60px" placeholder="Écris ta requête ici..."></textarea></div>
+      <div class="verdict" id="v_${id}"></div><div class="hint">Indice : <code>${esc_(sec.hint)}</code></div></div>`;
+  }
+  if(sec.t==='tp'){
+    let h = `<div class="tp"><h4>🛠️ ${sec.titre||'Travaux pratiques'}</h4>`;
+    sec.steps.forEach((s,si)=>{
+      const k = 'tp_'+id+'_'+si;
+      h += `<label><input type="checkbox" ${S[k]?'checked':''} onchange="tpToggle('${k}')"> ${esc_(s)}</label>`;
+    });
+    h += `</div>`;
+    return h;
+  }
+  return '';
+}
+
+function tpToggle(k){ if(S[k]) delete S[k]; else S[k]=true; save(); }
+
+/* ---- playgrounds ---- */
+function pgReset(id){
+  const ta = document.getElementById('ta_'+id);
+  ta.value = ta.dataset.starter;
+}
+function pgRun(id, mode){
+  const code = document.getElementById('ta_'+id).value;
+  if(mode==='js'){
+    const out = document.getElementById('out_'+id);
+    out.textContent = '';
+    const logs = [];
+    const orig = console.log;
+    console.log = (...a)=>{ logs.push(a.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(' ')); orig(...a); render(); };
+    function render(){ out.textContent = logs.join('\n') || '(aucune sortie)'; }
+    try { (new Function(code))(); render(); }
+    catch(e){ logs.push('❌ Erreur : '+e.message); render(); }
+    setTimeout(()=>{ console.log = orig; }, 4000);
+    return;
+  }
+  const iframe = document.getElementById('if_'+id);
+  if(mode==='web'){ iframe.srcdoc = code; return; }
+  if(mode==='leaflet'){
+    iframe.srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+<style>html,body,#map{height:100%;margin:0}</style></head>
+<body><div id="map"></div><script>try{${code}}catch(e){document.body.innerHTML='<pre style="color:red;padding:10px">Erreur : '+e.message+'</pre>'}<\/script></body></html>`;
+  }
+}
+
+/* ---- quiz ---- */
+function quizCheck(id, answers){
+  let ok = 0;
+  answers.forEach((a,qi)=>{
+    const sel = document.querySelector(`input[name="q_${id}_${qi}"]:checked`);
+    const labels = document.querySelectorAll(`input[name="q_${id}_${qi}"]`);
+    labels.forEach((inp,oi)=>{
+      inp.parentElement.classList.remove('ok','ko');
+      if(oi===a) inp.parentElement.classList.add('ok');
+      else if(sel && inp===sel) inp.parentElement.classList.add('ko');
+    });
+    document.getElementById(`exp_${id}_${qi}`).style.display='block';
+    if(sel && +sel.value===a) ok++;
+  });
+  const v = document.getElementById('v_'+id);
+  const pct = Math.round(ok/answers.length*100);
+  v.textContent = `Score : ${ok}/${answers.length} (${pct} %) ${pct===100?'— parfait ! 🎉':pct>=60?'— pas mal, relis les explications':'— relis la leçon puis réessaie'}`;
+  v.className = 'verdict '+(pct>=60?'ok':'ko');
+}
+
+/* ---- challenge ---- */
+function chRun(id, tests){
+  const code = document.getElementById('ch_'+id).value;
+  const box = document.getElementById('t_'+id);
+  let h = ''; let allOk = true;
+  tests.forEach(t=>{
+    let pass=false, err='';
+    try { pass = !!(new Function(code + '\n;return ('+t.code+');'))(); }
+    catch(e){ err=e.message; }
+    if(!pass) allOk=false;
+    h += `<div class="${pass?'pass':'fail'}">${pass?'✅':'❌'} ${t.name}${err?' — '+err:''}</div>`;
+  });
+  if(allOk) h += `<div class="pass" style="font-weight:700">🏆 Tous les tests passent — défi réussi !</div>`;
+  box.innerHTML = h;
+}
+
+/* ---- sql ---- */
+function sqlCheck(id, sols){
+  const raw = document.getElementById('sq_'+id).value;
+  // normalisation : minuscules, suppression de TOUS les espaces et du ; final
+  const norm = raw.toLowerCase().replace(/\s+/g,'').replace(/;+$/,'');
+  const ok = sols.some(s=> new RegExp(s,'i').test(norm));
+  const v = document.getElementById('v_'+id);
+  v.textContent = ok ? '✅ Correct ! Requête valide.' : '❌ Pas encore — vérifie la syntaxe (l\'indice peut aider).';
+  v.className = 'verdict '+(ok?'ok':'ko');
+}
+
+renderSide(); renderLesson();
+window.addEventListener('hashchange',()=>{ const id=location.hash.slice(1); if(allLessons.find(l=>l.id===id)){ current=id; renderSide(); renderLesson(); }});
+</script>
+</body>
+</html>
